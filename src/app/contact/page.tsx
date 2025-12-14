@@ -197,9 +197,6 @@ function ContactForm() {
       <section className="relative isolate">
         <div className="absolute inset-0 -z-10 bg-[color:var(--pne-brand)]" />
         <div className="container mx-auto px-4 pt-16 pb-8 text-center sm:px-6 sm:pt-20 sm:pb-10 lg:px-8 lg:pt-24 lg:pb-12">
-          <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-white uppercase sm:mb-4 sm:text-4xl lg:text-5xl xl:text-6xl">
-            Contact Us
-          </h1>
         </div>
       </section>
 

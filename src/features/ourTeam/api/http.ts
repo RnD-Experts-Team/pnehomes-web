@@ -1,8 +1,6 @@
-// src/repository/http.ts
-
 /**
  * Very small HTTP helper around fetch with timeout & JSON parsing.
- * You can replace this later with axios or your preferred client.
+ * Fix option A: disable caching so CMS updates show immediately.
  */
 
 export class HttpError extends Error {
@@ -26,8 +24,19 @@ export async function getJson<T>(
     const res = await fetch(url, {
       ...init,
       signal: controller.signal,
-      headers: { Accept: 'application/json', ...(init.headers || {}) },
+
+      // ✅ Fix option A: always fetch fresh data (Next.js server fetch cache off)
+      cache: 'no-store',
+
+      // Optional: helps with some proxies/CDNs that respect request headers
+      headers: {
+        Accept: 'application/json',
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        ...(init.headers || {}),
+      },
     })
+
     if (!res.ok) {
       const text = await res.text().catch(() => '')
       throw new HttpError(
@@ -35,6 +44,7 @@ export async function getJson<T>(
         res.status
       )
     }
+
     // Some backends send text/plain with JSON; try/catch to handle both
     const text = await res.text()
     return JSON.parse(text) as T

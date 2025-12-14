@@ -4,28 +4,38 @@ const API_URL = 'https://cms.pnehomes.com/api/about-us'
 
 /**
  * Repository class for handling aboutUs data operations from API
+ * Fix option A: disable caching so CMS updates show immediately.
  */
 export class AboutUsApiRepository {
   /**
-   * Get aboutUs data from the live API
+   * Get aboutUs data from the live API (NO CACHE)
    * @returns Promise<AboutUsResponse> - The aboutUs data wrapped in a response object
    */
   static async getAboutUsData(): Promise<AboutUsResponse> {
     try {
-      const response = await fetch(API_URL)
+      const response = await fetch(API_URL, {
+        cache: 'no-store', // ✅ always fetch fresh data
+        // Optional: ensure no CDN/proxy cache issues if they respect request headers
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+      })
+
       const result = await response.json()
 
       // Normalize the data so frontend structure stays consistent
       const data: AboutUsData = {
-        cover: result.data.cover,
-        slogan: result.data.slogan,
-        title: result.data.title,
-        description: result.data.content || '', // map `content` -> `description`
+        cover: result?.data?.cover ?? '',
+        slogan: result?.data?.slogan ?? '',
+        title: result?.data?.title ?? '',
+        description: result?.data?.content ?? '', // map `content` -> `description`
+        contact: result?.data?.contact, // keep if API returns it
       }
 
       return {
         data,
-        success: result.success,
+        success: Boolean(result?.success),
         message: 'AboutUs data retrieved successfully',
       }
     } catch (error) {

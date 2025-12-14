@@ -1,6 +1,8 @@
-import { getAboutUsData, getCover } from '@/features/aboutUs/api'
+import { getAboutUsData } from '@/features/aboutUs/api'
 import Image from 'next/image'
 import Link from 'next/link'
+
+export const dynamic = 'force-dynamic' // ✅ ensure this page is always rendered dynamically
 
 export default async function AboutUsPage() {
   const response = await getAboutUsData()
@@ -18,8 +20,8 @@ export default async function AboutUsPage() {
 
   const { data } = response
 
-  // Get cover image
-  const coverImage = await getCover()
+  // ✅ Use cover directly from the same response (no double fetch)
+  const coverImage = data.cover || null
 
   return (
     <div className="relative min-h-full">
@@ -89,9 +91,7 @@ export default async function AboutUsPage() {
                 {data.contact && (
                   <div className="mt-12 border-t border-gray-200 pt-8">
                     <div className="text-center">
-                      <h2 className="mb-6 text-2xl font-bold text-gray-900">
-                        {data.contact.title}
-                      </h2>
+                      <h2 className="mb-6 text-2xl font-bold text-gray-900">{data.contact.title}</h2>
                       <Link
                         href={`/contact?message=${encodeURIComponent(data.contact.message)}`}
                         className="bg-pne-accent hover:bg-pne-brand focus:ring-pne-accent inline-flex items-center rounded-md border border-transparent px-6 py-3 text-base font-medium text-white transition-colors duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none"
