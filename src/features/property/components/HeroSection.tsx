@@ -7,9 +7,10 @@ import Image from 'next/image'
 interface HeroSectionProps {
   coverImage: string
   pageTitle: string
+  subtitle?: string
 }
 
-export default function HeroSection({ coverImage, pageTitle }: HeroSectionProps) {
+export default function HeroSection({ coverImage, pageTitle, subtitle }: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
@@ -41,6 +42,14 @@ export default function HeroSection({ coverImage, pageTitle }: HeroSectionProps)
           <h1 className="text-pne-brand text-4xl font-extrabold tracking-tight uppercase sm:text-5xl drop-shadow-lg max-w-[800px] mx-auto break-words">
             {pageTitle}
           </h1>
+          {subtitle && (
+            <p
+              className="mx-auto mt-4 max-w-3xl text-base text-white/90 sm:text-lg md:text-xl"
+              style={{ fontFamily: '"New Caslon SB Bold", serif' }}
+            >
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
     </section>

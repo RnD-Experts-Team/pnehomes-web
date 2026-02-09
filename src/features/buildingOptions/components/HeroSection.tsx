@@ -3,9 +3,10 @@ import Image from 'next/image'
 interface HeroSectionProps {
   coverImage: string
   title: string
+  subtitle?: string
 }
 
-export default function HeroSection({ coverImage, title }: HeroSectionProps) {
+export default function HeroSection({ coverImage, title, subtitle }: HeroSectionProps) {
   return (
     <section className="relative isolate h-[60vh] overflow-hidden">
       {/* Fixed parallax background */}
@@ -30,6 +31,14 @@ export default function HeroSection({ coverImage, title }: HeroSectionProps) {
           <h1 className="text-pne-brand text-4xl font-extrabold tracking-tight uppercase sm:text-5xl max-w-[800px] mx-auto break-words">
             {title}
           </h1>
+          {subtitle && (
+            <p
+              className="mx-auto mt-4 max-w-3xl text-base text-white/90 sm:text-lg md:text-xl"
+              style={{ fontFamily: '"New Caslon SB Bold", serif' }}
+            >
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
     </section>

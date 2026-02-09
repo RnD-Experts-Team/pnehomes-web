@@ -5,6 +5,7 @@ import PropertyCard from '@/features/property/components/PropertyCard'
 import FilterBar from '@/features/property/components/FilterBar'
 import { toNum } from '@/lib/url'
 import HeroSection from '@/features/property/components/HeroSection'
+import { getGlobalSubtitle } from '@/lib/global-subtitle'
 
 // Always fetch fresh data from the API (no Next cache snapshot)
 export const dynamic = 'force-dynamic'
@@ -73,11 +74,12 @@ export default async function Page({ searchParams }: { searchParams: SP }) {
   // With the HTTP-backed repo:
   // - list(params) returns just this page of items (already filtered/sorted on the server)
   // - getTotalFilteredCount(params) reads pagination.total (fallbacks if absent)
-  const [list, totalCount, coverImage, pageTitle] = await Promise.all([
+  const [list, totalCount, coverImage, pageTitle, subtitle] = await Promise.all([
     Property.list(params),
     Property.getTotalFilteredCount(params),
     Property.getCoverImage(),
     Property.getPageTitle(),
+    getGlobalSubtitle(),
   ])
 
   const totalPages = Math.max(1, Math.ceil(totalCount / params.limit))
@@ -88,7 +90,7 @@ export default async function Page({ searchParams }: { searchParams: SP }) {
     <div className="relative min-h-full">
       {/* Hero / Title - Limited parallax container */}
       <div className="relative z-0">
-        {coverImage && <HeroSection coverImage={coverImage} pageTitle={pageTitle} />}
+        {coverImage && <HeroSection coverImage={coverImage} pageTitle={pageTitle} subtitle={subtitle} />}
       </div>
 
       {/* Content sections with solid backgrounds to cover parallax */}

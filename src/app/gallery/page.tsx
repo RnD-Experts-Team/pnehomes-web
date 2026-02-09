@@ -2,16 +2,18 @@ import { getGalleryData, getGalleryTitle, getGalleryCover } from '@/features/gal
 import { Card, CardContent } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getGlobalSubtitle } from '@/lib/global-subtitle'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 60 // ✅ refresh route cache every 60s
 
 export default async function GalleryPage() {
   try {
-    const [galleryData, galleryCover, galleryTitle] = await Promise.all([
+    const [galleryData, galleryCover, galleryTitle, subtitle] = await Promise.all([
       getGalleryData(),
       getGalleryCover(),
       getGalleryTitle(),
+      getGlobalSubtitle(),
     ])
 
     const { gallery: albums } = galleryData
@@ -47,6 +49,14 @@ export default async function GalleryPage() {
               <h1 className="text-pne-brand text-4xl font-extrabold tracking-tight uppercase sm:text-5xl drop-shadow-lg max-w-[800px] mx-auto break-words">
                 {galleryTitle}
               </h1>
+              {subtitle && (
+                <p
+                  className="mx-auto mt-4 max-w-3xl text-base text-white/90 sm:text-lg md:text-xl"
+                  style={{ fontFamily: '"New Caslon SB Bold", serif' }}
+                >
+                  {subtitle}
+                </p>
+              )}
             </div>
           </div>
         </section>

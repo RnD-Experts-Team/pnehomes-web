@@ -8,7 +8,11 @@ import { getBuildingOptions } from '../api' // async API fetcher
 import type { BuildingOptionsData } from '../model/types'
 import HeroSection from './HeroSection'
 
-export default function BuildingOptions() {
+interface BuildingOptionsProps {
+  subtitle?: string
+}
+
+export default function BuildingOptions({ subtitle }: BuildingOptionsProps) {
   const router = useRouter()
 
   // Local state for data + loading + error
@@ -80,7 +84,7 @@ export default function BuildingOptions() {
     <div className="min-h-screen">
       {/* Hero Section with Cover Image */}
       {data.cover && (
-        <HeroSection coverImage={data.cover} title={data.title} />
+        <HeroSection coverImage={data.cover} title={data.title} subtitle={subtitle} />
       )}
 
       {/* Slogan Section */}
