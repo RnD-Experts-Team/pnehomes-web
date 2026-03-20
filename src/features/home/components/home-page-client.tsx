@@ -470,19 +470,24 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
 
               {/* Logo tile */}
               <motion.div
-                className="hidden h-64 items-center justify-center rounded-xl bg-transparent ring-1 ring-black/5 md:flex"
+                className="relative hidden h-64 overflow-hidden rounded-xl md:block"
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}
                 viewport={{ once: true, amount: 0.3 }}
               >
-                <Image
+                <ResponsiveMedia
+                  src={gridSection.logo}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-black/5" />
+                {/* <Image
                   src={gridSection.logo}
                   alt="PNE Homes Logo"
                   width={320}
                   height={160}
                   className="h-auto w-[200px] object-contain md:w-[260px] lg:w-[320px]"
-                />
+                /> */}
               </motion.div>
 
               {/* Custom Homes */}

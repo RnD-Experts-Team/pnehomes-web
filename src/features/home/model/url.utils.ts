@@ -34,6 +34,40 @@ export function normalizeDriveImageUrl(url: string | null | undefined): string {
 }
 
 /**
+ * Normalizes Google Drive URLs for video files.
+ * Returns the Drive /preview URL so ResponsiveMedia can render it via iframe.
+ */
+export function normalizeDriveVideoUrl(url: string | null | undefined): string {
+  if (!url) return ''
+
+  try {
+    const u = new URL(url)
+
+    // Case A: drive.google.com/file/d/<id>/... — normalise to /preview
+    if (u.hostname === 'drive.google.com') {
+      const m = u.pathname.match(/\/file\/d\/([^/]+)/)
+      const id = m?.[1]
+      if (id) {
+        return `https://drive.google.com/file/d/${id}/preview`
+      }
+    }
+
+    // Case B: lh3.googleusercontent.com/d/<id> — extract id and build preview URL
+    if (u.hostname === 'lh3.googleusercontent.com') {
+      const m = u.pathname.match(/\/d\/([^/=?]+)/)
+      const id = m?.[1]
+      if (id) {
+        return `https://drive.google.com/file/d/${id}/preview`
+      }
+    }
+
+    return url
+  } catch {
+    return url
+  }
+}
+
+/**
  * Normalizes Google Drive image URLs for cover/background images
  * Uses w4096 for high-resolution backgrounds and hero images
  */

@@ -12,7 +12,7 @@ import {
   GridSection,
   Testimonial,
 } from '../model/home_content.types'
-import { normalizeDriveImageUrl, normalizeDriveCoverImage } from './url.utils'
+import { normalizeDriveImageUrl, normalizeDriveCoverImage, normalizeDriveVideoUrl } from './url.utils'
 
 
 const mapFirstSection = (src: ApiHomeData['first_section']): FirstSection => ({
@@ -35,7 +35,7 @@ const mapServices = (src: ApiServicesDto): Services => ({
 
 const mapGrid = (src: ApiGrid): GridSection => ({
   video: src.video ?? '/vid/second.mp4', // Use local video file as fallback if API value is null/undefined
-  logo: normalizeDriveImageUrl(src.logo),
+  logo: normalizeDriveVideoUrl(src.logo),
   links: src.links.map(l => ({ title: l.title, cover: normalizeDriveCoverImage(l.cover) })),
 })
 
