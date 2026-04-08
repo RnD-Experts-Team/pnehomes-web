@@ -69,6 +69,7 @@ async function getServicesDataFresh(): Promise<ServicesData> {
   // Normalize just in case (defensive)
   const data: ServicesData = {
     cover: envelope.data.cover,
+    cover_type: envelope.data.cover_type ?? null,
     services: Array.isArray(envelope.data.services) ? envelope.data.services : [],
   }
 

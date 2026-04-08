@@ -10,6 +10,7 @@ type ApiArticle = {
   title: string
   description?: string | null
   image: string
+  image_type?: string | null
   content?: string | null
 }
 
@@ -18,6 +19,7 @@ type ApiSection = {
   title: string
   description?: string | null
   section_image: string
+  section_image_type?: string | null
 }
 
 type ApiEnvelope<T> = {
@@ -27,10 +29,12 @@ type ApiEnvelope<T> = {
 
 type ApiBuildingOptionsPayload = {
   cover: string
+  cover_type?: string | null
   slogan: string
   title: string
   sections: ApiSection[]
   articles_cover?: string | null
+  articles_cover_type?: string | null
   articles?: ApiArticle[]
 }
 
@@ -142,6 +146,7 @@ function adaptToDomain(payload: ApiBuildingOptionsPayload): BuildingOptionsData 
     title: s.title,
     description: s.description ?? null,
     section_img: s.section_image,
+    section_img_type: (s.section_image_type as BuildingOption['section_img_type']) ?? null,
   }))
 
   const mappedArticles: Article[] = (payload.articles ?? []).map((a) => ({
@@ -150,17 +155,20 @@ function adaptToDomain(payload: ApiBuildingOptionsPayload): BuildingOptionsData 
     title: a.title,
     description: a.description ?? null,
     img: a.image,
+    img_type: (a.image_type as Article['img_type']) ?? null,
     // API does not provide article body; keep empty string to satisfy the domain type
     content: a.content ?? '',
   }))
 
   const articlesSection: ArticlesSection = {
     cover: payload.articles_cover ?? null,
+    cover_type: (payload.articles_cover_type as ArticlesSection['cover_type']) ?? null,
     articles: mappedArticles,
   }
 
   const domain: BuildingOptionsData = {
     cover: payload.cover,
+    cover_type: (payload.cover_type as BuildingOptionsData['cover_type']) ?? null,
     slogan: payload.slogan,
     title: payload.title,
     options,

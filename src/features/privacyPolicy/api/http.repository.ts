@@ -71,6 +71,7 @@ export class PrivacyPolicyHttpRepository {
           slogan: payload.data.slogan ?? '',
           description: payload.data.description ?? '',
           cover: payload.data.cover ?? '',
+          cover_type: (payload.data.cover_type as PrivacyPolicy['cover_type']) ?? null,
           contact: payload.data.contact
             ? {
                 title: payload.data.contact.title ?? '',

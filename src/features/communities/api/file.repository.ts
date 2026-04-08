@@ -2,7 +2,7 @@ import { Community, CommunitiesPageData } from '../model/types'
 import communitiesData from '../mock/communities.json'
 
 export class FileRepository {
-  private communities: Community[] = communitiesData.communities as Community[]
+  private communities: Community[] = communitiesData.communities as unknown as Community[]
 
   /**
    * Get all communities
@@ -84,6 +84,7 @@ export class FileRepository {
     return Promise.resolve({
       title: communitiesData.title,
       cover: communitiesData.cover || '/img/communities.jpg',
+      cover_type: null,
       zillowLink: communitiesData.zillow,
       contact: {
         title: communitiesData.contact?.title,

@@ -46,6 +46,7 @@ export interface CmsNavigationContact {
 
 export interface CmsNavigation {
   logo: string
+  logo_type?: string | null
   links: CmsLayoutLink[]
   contact: CmsNavigationContact
 }

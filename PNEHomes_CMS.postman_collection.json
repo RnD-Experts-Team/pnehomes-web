@@ -1,0 +1,489 @@
+{
+	"info": {
+		"_postman_id": "pnehomes-cms-api-collection",
+		"name": "PNEHomes CMS API",
+		"description": "Complete API collection for PNEHomes CMS. All public endpoints are GET (no auth). The only POST endpoint is contact-entries.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Home",
+			"item": [
+				{
+					"name": "Get Home Page",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/home",
+							"host": ["{{baseUrl}}"],
+							"path": ["home"]
+						},
+						"description": "Returns home page data: first_section, hero_sections, hero, services, grid_section, testimonials, contact."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Layout",
+			"item": [
+				{
+					"name": "Get Layout",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/layout",
+							"host": ["{{baseUrl}}"],
+							"path": ["layout"]
+						},
+						"description": "Returns navigation, footer links, contact info, and social links."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Services",
+			"item": [
+				{
+					"name": "List Services",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/services",
+							"host": ["{{baseUrl}}"],
+							"path": ["services"]
+						},
+						"description": "Returns cover, cover_type, and array of services."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Service by Slug",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/services/:slug",
+							"host": ["{{baseUrl}}"],
+							"path": ["services", ":slug"],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "example-service",
+									"description": "Service slug"
+								}
+							]
+						},
+						"description": "Returns a single service by slug with content sections and contact."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Properties",
+			"item": [
+				{
+					"name": "List Properties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/properties?page=1&limit=9",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties"],
+							"query": [
+								{ "key": "page", "value": "1", "description": "Page number (default: 1)" },
+								{ "key": "limit", "value": "9", "description": "Items per page (default: 9)" },
+								{ "key": "community", "value": "", "description": "Filter by community slug", "disabled": true },
+								{ "key": "price", "value": "", "description": "Filter by price range", "disabled": true },
+								{ "key": "beds", "value": "", "description": "Filter by number of beds", "disabled": true },
+								{ "key": "baths", "value": "", "description": "Filter by number of baths", "disabled": true },
+								{ "key": "garages", "value": "", "description": "Filter by number of garages", "disabled": true },
+								{ "key": "min", "value": "", "description": "Min sqft", "disabled": true },
+								{ "key": "max", "value": "", "description": "Max sqft", "disabled": true },
+								{ "key": "sortBy", "value": "sqft", "description": "Sort field (sqft, order)", "disabled": true },
+								{ "key": "sortOrder", "value": "desc", "description": "Sort direction (asc, desc)", "disabled": true }
+							]
+						},
+						"description": "Returns paginated properties with filters."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Property by Slug",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/properties/:slug",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", ":slug"],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "example-property",
+									"description": "Property slug"
+								}
+							]
+						},
+						"description": "Returns a single property with gallery, features, floor plans, and contact."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Properties Contact",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/properties/contact",
+							"host": ["{{baseUrl}}"],
+							"path": ["properties", "contact"]
+						},
+						"description": "Returns title and message for the properties contact section."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Communities",
+			"item": [
+				{
+					"name": "List Communities",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/communities",
+							"host": ["{{baseUrl}}"],
+							"path": ["communities"]
+						},
+						"description": "Returns title, cover, communities array with gallery, features, floor plans, and contact."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Community by Slug",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/communities/:slug",
+							"host": ["{{baseUrl}}"],
+							"path": ["communities", ":slug"],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "example-community",
+									"description": "Community slug"
+								}
+							]
+						},
+						"description": "Returns a single community by slug."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gallery",
+			"item": [
+				{
+					"name": "List Gallery Albums",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/gallery",
+							"host": ["{{baseUrl}}"],
+							"path": ["gallery"]
+						},
+						"description": "Returns title, cover, gallery albums with sub_albums or images."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Album by Slug",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/gallery/:slug",
+							"host": ["{{baseUrl}}"],
+							"path": ["gallery", ":slug"],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "example-album",
+									"description": "Album slug"
+								}
+							]
+						},
+						"description": "Returns a single album with sub_albums or gallery images."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sub-Album",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/gallery/:albumSlug/:subAlbumSlug",
+							"host": ["{{baseUrl}}"],
+							"path": ["gallery", ":albumSlug", ":subAlbumSlug"],
+							"variable": [
+								{
+									"key": "albumSlug",
+									"value": "example-album",
+									"description": "Parent album slug"
+								},
+								{
+									"key": "subAlbumSlug",
+									"value": "example-sub-album",
+									"description": "Sub-album slug"
+								}
+							]
+						},
+						"description": "Returns a sub-album with its gallery images."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "List Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/events",
+							"host": ["{{baseUrl}}"],
+							"path": ["events"]
+						},
+						"description": "Returns cover, slogan, title, events array with gallery, and contact."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Team",
+			"item": [
+				{
+					"name": "List Team Members",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/team",
+							"host": ["{{baseUrl}}"],
+							"path": ["team"]
+						},
+						"description": "Returns cover, slogan, title, subtitle, description, team members, and contact."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Building Options",
+			"item": [
+				{
+					"name": "List Building Options",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/building-options",
+							"host": ["{{baseUrl}}"],
+							"path": ["building-options"]
+						},
+						"description": "Returns cover, slogan, title, sections array, articles_cover, and articles array."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Building Article by Slug",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/building-options/articles/:slug",
+							"host": ["{{baseUrl}}"],
+							"path": ["building-options", "articles", ":slug"],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "example-article",
+									"description": "Article slug"
+								}
+							]
+						},
+						"description": "Returns a single building article by slug."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Content Pages",
+			"item": [
+				{
+					"name": "Get About Us",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/about-us",
+							"host": ["{{baseUrl}}"],
+							"path": ["about-us"]
+						},
+						"description": "Returns cover, cover_type, slogan, title, and content for the About Us page."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Privacy Policy",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/privacy-policy",
+							"host": ["{{baseUrl}}"],
+							"path": ["privacy-policy"]
+						},
+						"description": "Returns title, slogan, description, cover, cover_type, and contact for the Privacy Policy page."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Floor Plans",
+			"item": [
+				{
+					"name": "List Floor Plans",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/floor-plans",
+							"host": ["{{baseUrl}}"],
+							"path": ["floor-plans"]
+						},
+						"description": "Returns array of floor plans: id, slug, title, description, image, image_type, bedroom, bathroom, floor, area."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contact",
+			"item": [
+				{
+					"name": "Submit Contact Entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"first_name\": \"John\",\n\t\"last_name\": \"Doe\",\n\t\"email\": \"john.doe@example.com\",\n\t\"phone_number\": \"+1234567890\",\n\t\"message\": \"I am interested in your properties.\",\n\t\"land_area_sqft\": 2500,\n\t\"land_address\": \"123 Main St, City, State\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/contact-entries",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact-entries"]
+						},
+						"description": "Submit a contact form entry. Required: first_name, last_name, email, phone_number, message. Optional: land_area_sqft (integer), land_address (string)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth (Sanctum)",
+			"item": [
+				{
+					"name": "Get Authenticated User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}", "description": "Sanctum token" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": ["{{baseUrl}}"],
+							"path": ["user"]
+						},
+						"description": "Returns the authenticated user. Requires Sanctum token."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

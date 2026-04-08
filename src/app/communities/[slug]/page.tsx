@@ -84,7 +84,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           {/* Gallery */}
           <Card>
             <CardContent className="p-2">
-              <ImageGallery images={community.gallery} title={community.title} maxVisibleImages={5} />
+              <ImageGallery images={community.gallery.map(g => typeof g === 'string' ? g : g.url)} title={community.title} maxVisibleImages={5} />
             </CardContent>
           </Card>
         </div>

@@ -26,6 +26,7 @@ function toOurTeamData(api: OurTeamApiData): OurTeamData {
     ? api.team.map(m => ({
         id: m.id,
         cover: m.cover ?? '',
+        cover_type: (m.cover_type as TeamMember['cover_type']) ?? null,
         name: m.name ?? '',
         position: m.position ?? '',
         description: m.description ?? '',
@@ -41,6 +42,7 @@ function toOurTeamData(api: OurTeamApiData): OurTeamData {
 
   return {
     cover: api.cover ?? '',
+    cover_type: (api.cover_type as OurTeamData['cover_type']) ?? null,
     slogan: api.slogan ?? '',
     title: api.title ?? '',
     subtitle: api.subtitle,
@@ -114,6 +116,7 @@ export class OurTeamRepository {
     const data = await this.getOurTeamData()
     return {
       cover: data.cover,
+      cover_type: data.cover_type,
       slogan: data.slogan,
       title: data.title,
       description: data.description,

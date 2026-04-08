@@ -57,6 +57,7 @@ export class HttpRepository {
 
     return {
       cover,
+      cover_type: (raw.data.cover_type as EventsData['cover_type']) ?? null,
       slogan,
       title,
       contact,

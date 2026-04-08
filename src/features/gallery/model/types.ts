@@ -1,10 +1,14 @@
+export type MediaType = 'image' | 'video' | null
+
 /**
  * Gallery Image Interface
  * Represents a single image with virtual and real versions
  */
 export interface GalleryImage {
   virtual_img: string
+  virtual_img_type: MediaType
   real_img: string
+  real_img_type: MediaType
 }
 
 /**
@@ -15,6 +19,7 @@ export interface SubAlbum {
   slug: string
   title: string
   cover_img: string
+  cover_img_type: MediaType
   gallery: GalleryImage[]
 }
 
@@ -27,6 +32,7 @@ export interface GalleryAlbum {
   slug: string
   title: string
   cover_img: string
+  cover_img_type: MediaType
   sub_albums?: SubAlbum[]
   gallery?: GalleryImage[]
 }
@@ -47,6 +53,7 @@ export interface ContactInfo {
 export interface GalleryData {
   title: string
   cover: string
+  cover_type: MediaType
   gallery: GalleryAlbum[]
   contact: ContactInfo
 }

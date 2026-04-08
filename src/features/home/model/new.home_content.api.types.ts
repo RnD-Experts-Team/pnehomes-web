@@ -17,7 +17,9 @@ export interface ApiHomeData {
 export interface ApiFirstSection {
   video?: string | null
   mobile_cover: string
+  mobile_cover_type?: string | null
   logo: string
+  logo_type?: string | null
   title: string
   subtitle: string | null
   book_button_text: string | null
@@ -42,6 +44,7 @@ export interface ApiServiceLink {
 export interface ApiServices {
   title: string
   cover: string
+  cover_type?: string | null
   description: string | null
   links: ApiServiceLink[]
 }
@@ -49,11 +52,14 @@ export interface ApiServices {
 export interface ApiGridLink {
   title: string
   cover: string
+  cover_type?: string | null
 }
 
 export interface ApiGridSection {
   video?: string | null
+  video_type?: string | null
   logo: string
+  logo_type?: string | null
   links: ApiGridLink[]
 }
 

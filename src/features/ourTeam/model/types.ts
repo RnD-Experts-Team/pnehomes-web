@@ -1,8 +1,11 @@
 // src/model/types.ts
 
+export type MediaType = 'image' | 'video' | null
+
 export interface TeamMember {
   id?: number            // API provides an id (optional in case future data omits it)
   cover: string
+  cover_type: MediaType
   name: string
   position: string
   description: string
@@ -15,6 +18,7 @@ export interface Contact {
 
 export interface OurTeamData {
   cover: string
+  cover_type: MediaType
   slogan: string
   title: string
   subtitle?: string       // API includes this; keep optional so existing UI won’t break
@@ -35,6 +39,7 @@ export interface OurTeamApiEnvelope {
 
 export interface OurTeamApiData {
   cover: string
+  cover_type?: string | null
   slogan: string
   title: string
   subtitle?: string
@@ -42,6 +47,7 @@ export interface OurTeamApiData {
   team: Array<{
     id?: number
     cover: string
+    cover_type?: string | null
     name: string
     position: string
     description: string

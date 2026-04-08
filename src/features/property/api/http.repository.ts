@@ -68,6 +68,7 @@ const ApiFactsFeature = z.object({
 const ApiFloorPlanLoose = z.object({
   title: z.string(),
   img: z.union([z.string(), z.null()]).optional(), // allow null/missing
+  img_type: z.string().nullable().optional(),
   Description: z.string().optional(),
   description: z.string().optional(),
 })
@@ -105,6 +106,7 @@ const ApiDataEnvelope = z.object({
   data: z.object({
     title: z.string().optional().default('Floor Plans'),
     cover: z.string().nullable().optional(), // allow null/missing
+    cover_type: z.string().nullable().optional(),
     properties: z.array(ApiProperty),
     pagination: ApiPagination.optional(),
     filters: z
@@ -136,11 +138,12 @@ function toStringNumberish(v: string | number | undefined | null): string {
 
 function normalizeFloorPlans(
   p: z.infer<typeof ApiProperty>
-): Array<{ title: string; img: string; Description: string }> {
+): Array<{ title: string; img: string; img_type: 'image' | 'video' | null; Description: string }> {
   const plans = p.floor_plans ?? p.Floor_plans ?? []
   return plans.map(fp => ({
     title: fp.title,
     img: fp.img ?? '', // handle null/missing
+    img_type: (fp.img_type as 'image' | 'video' | null) ?? null,
     // normalize to capital-D `Description` to match your existing types
     Description: fp.Description ?? fp.description ?? '',
   }))

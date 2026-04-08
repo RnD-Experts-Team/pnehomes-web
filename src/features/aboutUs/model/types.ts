@@ -1,3 +1,5 @@
+export type MediaType = 'image' | 'video' | null
+
 /**
  * Contact information interface for aboutUs section
  */
@@ -11,6 +13,7 @@ export interface ContactInfo {
  */
 export interface AboutUsData {
   cover: string
+  cover_type: MediaType
   slogan: string
   title: string
   /** Description text that may contain HTML tags for formatting */

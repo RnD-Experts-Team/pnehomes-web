@@ -1,5 +1,5 @@
 // src/repository/api.repository.ts
-import { Community, CommunitiesPageData } from '../model/types'
+import { Community, CommunitiesPageData, MediaType } from '../model/types'
 
 /**
  * If you prefer to configure this per env, set CMS_COMMUNITIES_URL in your runtime env
@@ -16,6 +16,7 @@ type CmsEnvelope<T> = {
 type CmsCommunitiesPayload = {
   title: string | null
   cover: string | null
+  cover_type?: string | null
   communities: Community[]
   zillow: string | null
   contact: {
@@ -49,11 +50,14 @@ export class ApiRepository {
     const data = json.data
     data.communities = (data.communities || []).map((c) => ({
       ...c,
+      card_image_type: c.card_image_type ?? null,
       gallery: c.gallery || [],
       video: c.video ?? null,
+      video_type: c.video_type ?? null,
       'community-features': c['community-features'] ?? null,
       'floor-plans': (c['floor-plans'] ?? []).map((fp) => ({
         ...fp,
+        cover_type: fp.cover_type ?? null,
         status: fp.status ?? null,
       })),
       // ensure starting-price is a string (CMS returns string already, but just in case)
@@ -145,6 +149,7 @@ export class ApiRepository {
     return {
       title: data.title || 'Communities',
       cover: data.cover || '/img/communities.jpg',
+      cover_type: (data.cover_type as MediaType) ?? null,
       zillowLink: data.zillow || '',
       contact: {
         title: data.contact?.title || undefined,

@@ -27,6 +27,7 @@ export class AboutUsApiRepository {
       // Normalize the data so frontend structure stays consistent
       const data: AboutUsData = {
         cover: result?.data?.cover ?? '',
+        cover_type: result?.data?.cover_type ?? null,
         slogan: result?.data?.slogan ?? '',
         title: result?.data?.title ?? '',
         description: result?.data?.content ?? '', // map `content` -> `description`
