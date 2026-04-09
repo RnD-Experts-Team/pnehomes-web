@@ -9,6 +9,7 @@ import {
   GalleryFilterOptions,
   GallerySearchResult,
   ContactInfo,
+  MediaType,
 } from '../model/types'
 
 const galleryRepository = new GalleryApiRepository()
@@ -19,6 +20,11 @@ export const getGalleryData = async (): Promise<GalleryData> =>
 
 export const getGalleryCover = async (): Promise<string> =>
   galleryRepository.getCoverImage()
+
+export const getGalleryCoverData = async (): Promise<{ cover: string; cover_type: MediaType }> => {
+  const data = await galleryRepository.getGalleryData()
+  return { cover: data.cover, cover_type: data.cover_type }
+}
 
 export const getGalleryTitle = async (): Promise<string> =>
   galleryRepository.getGalleryTitle()

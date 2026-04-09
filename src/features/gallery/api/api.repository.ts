@@ -9,11 +9,9 @@ import {
   ContactInfo,
 } from '../model/types'
 import { httpGetJson } from '../data/http'
+import { cmsUrl } from '@/lib/cms'
 
-// If you prefer env config, replace with process.env.NEXT_PUBLIC_CMS_BASE_URL, etc.
-const CMS_GALLERY_URL =
-  (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_CMS_GALLERY_URL) ||
-  'https://cms.pnehomes.com/api/gallery'
+const CMS_GALLERY_URL = cmsUrl('/api/gallery')
 
 type ApiEnvelope<T> = {
   success: boolean

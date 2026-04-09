@@ -8,26 +8,14 @@ import type {
   SocialMediaItem,
 } from '../model/types'
 
+import { cmsUrl } from '@/lib/cms'
+
 /**
  * Config:
- * 1) Use env if provided, else fallback to the given URL.
- * 2) Tiny in-memory cache with TTL to avoid hammering the CMS.
+ * Tiny in-memory cache with TTL to avoid hammering the CMS.
  */
 
-// Type definition for import.meta with env property
-interface ImportMetaEnv {
-  VITE_CMS_LAYOUT_URL?: string
-  [key: string]: string | undefined
-}
-
-interface ImportMeta {
-  env?: ImportMetaEnv
-}
-
-const CMS_LAYOUT_URL =
-  (typeof import.meta !== 'undefined' && (import.meta as ImportMeta).env?.VITE_CMS_LAYOUT_URL) ||
-  (typeof process !== 'undefined' && (process.env.NEXT_PUBLIC_CMS_LAYOUT_URL || process.env.VITE_CMS_LAYOUT_URL)) ||
-  'https://cms.pnehomes.com/api/layout'
+const CMS_LAYOUT_URL = cmsUrl('/api/layout')
 
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 

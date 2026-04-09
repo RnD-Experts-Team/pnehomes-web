@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { communitiesAPI } from '@/features/communities/api'
@@ -37,8 +37,10 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
         {/* Parallax background image container */}
         {pageData.cover ? (
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={pageData.cover}
+              mediaType={pageData.cover_type}
+              isCover
               alt="Community Cover"
               fill
               className="object-cover object-center"
@@ -84,7 +86,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           {/* Gallery */}
           <Card>
             <CardContent className="p-2">
-              <ImageGallery images={community.gallery.map(g => typeof g === 'string' ? g : g.url)} title={community.title} maxVisibleImages={5} />
+              <ImageGallery images={community.gallery.map(g => typeof g === 'string' ? g : g.url)} imageTypes={community.gallery.map(g => typeof g === 'string' ? null : g.type)} title={community.title} maxVisibleImages={5} />
             </CardContent>
           </Card>
         </div>
@@ -147,8 +149,9 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
                 >
                   <Card className="overflow-hidden p-0">
                     <div className="relative aspect-[4/3]">
-                      <Image
+                      <CmsMedia
                         src={floorPlan.cover}
+                        mediaType={floorPlan.cover_type}
                         alt={floorPlan.title}
                         fill
                         sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"

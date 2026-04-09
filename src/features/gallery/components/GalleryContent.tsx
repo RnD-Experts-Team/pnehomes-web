@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
-import { GalleryImage } from '../model/types'
+import { CmsMedia } from '@/components/CmsMedia'
+import { GalleryImage, MediaType } from '../model/types'
 
 interface GalleryContentProps {
   images: GalleryImage[]
@@ -46,6 +46,11 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
     return imageUrl && imageUrl.trim() !== '' ? imageUrl : '/placeholder-image.jpg'
   }
 
+  const getCurrentMediaType = (image: GalleryImage, index: number): MediaType => {
+    const state = imageStates[index] || 'virtual'
+    return state === 'real' && image.real_img ? image.real_img_type : image.virtual_img_type
+  }
+
   const getToggleLabel = (image: GalleryImage, index: number) => {
     const state = imageStates[index] || 'virtual'
     return state === 'real' ? 'View Virtual Image' : 'View Real Image'
@@ -81,6 +86,7 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {validImages.map((image, index) => {
         const currentSrc = getCurrentImage(image, index)
+        const currentMediaType = getCurrentMediaType(image, index)
         
         return (
           <Card
@@ -90,8 +96,9 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
             <CardContent className="p-0">
               <div className="relative aspect-[4/3] overflow-hidden">
                 {currentSrc !== '/placeholder-image.jpg' ? (
-                  <Image
+                  <CmsMedia
                     src={currentSrc}
+                    mediaType={currentMediaType}
                     alt={
                       albumTitle ? `${albumTitle} - Image ${index + 1}` : `Gallery image ${index + 1}`
                     }
@@ -102,7 +109,6 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
                     sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     onError={() => {
                       console.error('[GalleryContent] Image failed to load:', currentSrc)
-                      // Optionally set a fallback image here
                     }}
                   />
                 ) : (

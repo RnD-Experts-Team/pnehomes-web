@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet'
@@ -80,8 +80,9 @@ export default function ComparisonDrawer() {
                   <CardContent className="p-3">
                     <div className="flex gap-3">
                       <div className="relative h-16 w-20 flex-shrink-0 overflow-hidden rounded">
-                        <Image
+                        <CmsMedia
                           src={property.gallery[0] ?? '/img/placeholder.jpg'}
+                          mediaType={property.gallery_types?.[0]}
                           alt={property.title}
                           fill
                           className="object-cover"

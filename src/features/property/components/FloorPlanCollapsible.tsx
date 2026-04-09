@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
+import type { MediaType } from '@/components/CmsMedia'
 import { ChevronDown } from 'lucide-react'
 
 interface FloorPlan {
   img: string
+  img_type?: MediaType
   title: string
   Description?: string
 }
@@ -45,8 +47,9 @@ export function FloorPlanCollapsible({ plan }: { plan: FloorPlan }) {
       >
         <div ref={contentRef} className="border-t">
           <div className="relative aspect-[4/3] transform transition-transform duration-300 ease-in-out">
-            <Image
+            <CmsMedia
               src={plan.img}
+              mediaType={plan.img_type}
               alt={plan.title}
               fill
               className="object-cover"

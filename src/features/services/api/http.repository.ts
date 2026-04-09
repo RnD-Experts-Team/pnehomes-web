@@ -4,14 +4,12 @@ import {
   ServiceRepository,
   ServicesData,
   RemoteServicesEnvelope,
+  type MediaType,
 } from '../model/types'
 
-/**
- * Config
- * You can override CMS_BASE_URL via env at build/runtime.
- */
-const CMS_BASE_URL = process.env.CMS_BASE_URL?.replace(/\/$/, '') || 'https://cms.pnehomes.com'
-const SERVICES_ENDPOINT = `${CMS_BASE_URL}/api/services`
+import { cmsUrl } from '@/lib/cms'
+
+const SERVICES_ENDPOINT = cmsUrl('/api/services')
 
 /**
  * Minimal fetch wrapper with timeout & JSON guard
@@ -112,6 +110,11 @@ export class HttpServiceRepository implements ServiceRepository {
   async getCover(): Promise<string> {
     const data = await getServicesDataFresh()
     return data.cover
+  }
+
+  async getCoverType(): Promise<MediaType> {
+    const data = await getServicesDataFresh()
+    return data.cover_type
   }
 
   /**

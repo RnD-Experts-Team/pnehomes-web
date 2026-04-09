@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 import * as Property from '@/features/property/api'
 import type { Property as PropertyType } from '@/features/property/model/types'
@@ -63,9 +63,18 @@ function CompareContent() {
           {/* Background image (fixed) */}
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat md:bg-fixed"
-            style={{ backgroundImage: `url(/img/services_home.jpg)` }}
-          />
+            className="absolute inset-0 -z-10 bg-gray-100 bg-cover bg-center bg-no-repeat md:bg-fixed"
+          >
+            <CmsMedia
+              src="/img/services_home.jpg"
+              alt="Compare Properties Cover"
+              isCover
+              fill
+              className="object-cover object-center"
+              priority
+              sizes="100vw"
+            />
+          </div>
           {/* Overlay */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-white/10 to-black/10" />
 
@@ -97,9 +106,17 @@ function CompareContent() {
           {/* Background image (fixed) */}
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat md:bg-fixed"
-            style={{ backgroundImage: `url(${coverImage || "/img/services_home.jpg"})` }}
-          />
+            className="absolute inset-0 -z-10 bg-gray-100 bg-cover bg-center bg-no-repeat md:bg-fixed"
+          >
+            <CmsMedia
+              src={coverImage || "/img/services_home.jpg"}
+              alt="Compare Properties Cover"
+              isCover
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+          </div>
           {/* Overlay */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-white/10 to-black/10" />
 
@@ -154,9 +171,17 @@ function CompareContent() {
         {/* Background image (fixed) */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat md:bg-fixed"
-          style={{ backgroundImage: `url(${coverImage})` }}
-        />
+          className="absolute inset-0 -z-10 bg-gray-100 bg-cover bg-center bg-no-repeat md:bg-fixed"
+        >
+          <CmsMedia
+            src={coverImage}
+            alt="Compare Properties Cover"
+            isCover
+            fill
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+        </div>
         {/* Overlay */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-white/10 to-black/10" />
 
@@ -187,7 +212,7 @@ function CompareContent() {
           {properties.map(property => (
             <Card key={property.id} className="overflow-hidden">
               <div className="relative aspect-[4/3]">
-                <Image
+                <CmsMedia
                   src={property.gallery[0] ?? '/img/placeholder.jpg'}
                   alt={property.title}
                   fill

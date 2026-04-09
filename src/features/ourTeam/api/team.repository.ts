@@ -8,13 +8,9 @@ import type {
   OurTeamApiEnvelope,
   TeamMember,
 } from '../model/types'
+import { cmsUrl } from '@/lib/cms'
 
-// You can override this via env if you prefer.
-// Example (Vite): import.meta.env.VITE_CMS_BASE_URL
-// Example (Next.js): process.env.NEXT_PUBLIC_CMS_BASE_URL
-const CMS_BASE_URL = 'https://cms.pnehomes.com/api'
-
-const TEAM_ENDPOINT = `${CMS_BASE_URL.replace(/\/$/, '')}/team`
+const TEAM_ENDPOINT = cmsUrl('/api/team')
 
 /**
  * Transform raw API data into the stable OurTeamData shape used by the app.

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import { Card, CardContent } from '@/components/ui/card'
 import { getBuildingOptions } from '../api' // async API fetcher
 import type { BuildingOptionsData } from '../model/types'
@@ -84,7 +84,7 @@ export default function BuildingOptions({ subtitle }: BuildingOptionsProps) {
     <div className="min-h-screen">
       {/* Hero Section with Cover Image */}
       {data.cover && (
-        <HeroSection coverImage={data.cover} title={data.title} subtitle={subtitle} />
+        <HeroSection coverImage={data.cover} coverImageType={data.cover_type} title={data.title} subtitle={subtitle} />
       )}
 
       {/* Slogan Section */}
@@ -127,8 +127,9 @@ export default function BuildingOptions({ subtitle }: BuildingOptionsProps) {
               >
                 <CardContent className="p-0">
                   <div className="relative h-48 w-full overflow-hidden rounded-t-xl sm:h-56 md:h-64 lg:h-80 xl:h-96">
-                    <Image
+                    <CmsMedia
                       src={option.section_img}
+                      mediaType={option.section_img_type}
                       alt={option.title}
                       fill
                       className="object-cover transition-transform duration-300 hover:scale-110"
@@ -173,8 +174,9 @@ export default function BuildingOptions({ subtitle }: BuildingOptionsProps) {
                   >
                     <CardContent className="p-0">
                       <div className="relative h-48 w-full overflow-hidden rounded-t-xl">
-                        <Image
+                        <CmsMedia
                           src={article.img}
+                          mediaType={article.img_type}
                           alt={article.title}
                           fill
                           className="object-cover transition-transform duration-300 hover:scale-110"

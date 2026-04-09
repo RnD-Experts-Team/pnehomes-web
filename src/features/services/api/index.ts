@@ -4,6 +4,7 @@ import {
   ServiceApiResponse,
   SingleServiceApiResponse,
   CoverApiResponse,
+  type MediaType,
 } from '../model/types'
 
 /**
@@ -193,6 +194,14 @@ export class ServicesAPI {
       }
     }
   }
+
+  static async getCoverType(): Promise<MediaType> {
+    try {
+      return await serviceRepository.getCoverType()
+    } catch {
+      return null
+    }
+  }
 }
 
 // Export convenience functions
@@ -204,6 +213,7 @@ export const {
   getPaginatedServices,
   serviceExists,
   getCover,
+  getCoverType,
 } = ServicesAPI
 
 // Export repository for direct access if needed

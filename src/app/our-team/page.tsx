@@ -1,5 +1,5 @@
 import { getOurTeamData, TeamMember } from '@/features/ourTeam/api'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic' // ✅ always dynamic rendering (no stale server cache)
@@ -17,8 +17,10 @@ export default async function OurTeamPage() {
         <section className="relative isolate h-[60vh] overflow-hidden">
           {/* Parallax background image container */}
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={coverImage}
+              mediaType={teamData?.cover_type}
+              isCover
               alt="Our Team Hero"
               fill
               className="object-cover object-center"
@@ -93,8 +95,9 @@ export default async function OurTeamPage() {
                     >
                       {/* Media */}
                       <div className="relative aspect-[3/4] overflow-hidden">
-                        <Image
+                        <CmsMedia
                           src={member.cover}
+                          mediaType={member.cover_type}
                           alt={member.name}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

@@ -1,6 +1,7 @@
 import { HomeContent } from '../model/home_content.types'
 import { ApiHomeResponse } from '../model/new.home_content.api.types'
 import { mapApiToHomeContent } from '../model/new.home_content.mappers'
+import { cmsUrl } from '@/lib/cms'
 
 /**
  * Server-friendly repository that pulls from the CMS.
@@ -17,7 +18,7 @@ export class HomeContentRepository {
     return HomeContentRepository.instance
   }
 
-  private endpoint = 'https://cms.pnehomes.com/api/home'
+  private endpoint = cmsUrl('/api/home')
 
   /**
    * Fetch & map the complete home content.

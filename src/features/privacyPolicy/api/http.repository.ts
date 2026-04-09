@@ -1,14 +1,9 @@
 // src/privacy-policy/repository/http.repository.ts
 
 import { PrivacyPolicy, PrivacyPolicyResponse } from '../model/types'
+import { cmsUrl } from '@/lib/cms'
 
-/**
- * Where the CMS lives. Override in env if you have different environments.
- * - NEXT_PUBLIC_ so this works in both server & client (Next.js, Vite + import.meta.env, etc.)
- */
-const CMS_BASE =  'https://cms.pnehomes.com'
-
-const PRIVACY_POLICY_ENDPOINT = `${CMS_BASE}/api/privacy-policy`
+const PRIVACY_POLICY_ENDPOINT = cmsUrl('/api/privacy-policy')
 
 /**
  * Low-level fetch helper with a sane timeout and nice error messages.

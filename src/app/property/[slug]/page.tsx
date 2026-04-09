@@ -1,7 +1,7 @@
 // src/app/property/[slug]/page.tsx
 import * as Property from '@/features/property/api'
 import Link from 'next/link'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import { notFound } from 'next/navigation'
 import SharePrintButtons from '@/features/property/components/SharePrintButtons'
 import { Badge } from '@/components/ui/badge'
@@ -50,9 +50,10 @@ export default async function Page({
   }
 
   // Get filtered properties to calculate navigation and cover image
-  const [filteredProperties, coverImage] = await Promise.all([
+  const [filteredProperties, coverImage, coverType] = await Promise.all([
     Property.list({ ...filterParams, limit: 1000 }),
     Property.getCoverImage(),
+    Property.getCoverType(),
   ])
 
   const currentIndex = filteredProperties.findIndex(prop => prop.slug === slug)
@@ -104,8 +105,10 @@ export default async function Page({
         <section className="relative isolate h-[60vh] overflow-hidden">
           {/* Parallax background image container */}
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={coverImage}
+              mediaType={coverType}
+              isCover
               alt={p.title || 'Property'}
               fill
               className="object-cover object-center"

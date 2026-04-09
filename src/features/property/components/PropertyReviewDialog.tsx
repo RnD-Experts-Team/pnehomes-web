@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 import type { Property } from '../model/types'
 import {
@@ -58,8 +58,9 @@ export default function PropertyReviewDialog({ property, children }: PropertyRev
                     {gallery.map((image, index) => (
                       <CarouselItem key={index}>
                         <div className="relative w-full overflow-hidden rounded-lg aspect-[16/9] lg:aspect-[4/3]">
-                          <Image
+                          <CmsMedia
                             src={image}
+                            mediaType={property.gallery_types?.[index]}
                             alt={`${property.title} - Image ${index + 1}`}
                             fill
                             sizes="(min-width: 1024px) 60vw, 90vw"

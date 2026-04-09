@@ -1,6 +1,6 @@
-import { getGalleryData, getGalleryTitle, getGalleryCover } from '@/features/gallery/api'
+import { getGalleryData, getGalleryTitle } from '@/features/gallery/api'
 import { Card, CardContent } from '@/components/ui/card'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 import { getGlobalSubtitle } from '@/lib/global-subtitle'
 
@@ -9,19 +9,20 @@ export const revalidate = 60 // ✅ refresh route cache every 60s
 
 export default async function GalleryPage() {
   try {
-    const [galleryData, galleryCover, galleryTitle, subtitle] = await Promise.all([
+    const [galleryData, galleryTitle, subtitle] = await Promise.all([
       getGalleryData(),
-      getGalleryCover(),
       getGalleryTitle(),
       getGlobalSubtitle(),
     ])
 
     const { gallery: albums } = galleryData
 
+    console.log(albums)
+
     console.log('[GalleryPage] Rendering with data:', {
       title: galleryTitle,
       albumCount: albums.length,
-      hasCover: !!galleryCover,
+      hasCover: !!galleryData.cover,
     })
 
     return (
@@ -30,16 +31,15 @@ export default async function GalleryPage() {
         <section className="relative isolate overflow-hidden h-[60vh]">
           {/* Parallax background image container */}
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
-              src={galleryCover}
+            <CmsMedia
+              src={galleryData.cover}
+              mediaType={galleryData.cover_type}
               alt={galleryTitle}
+              isCover
               fill
               className="object-cover object-center"
               priority
               sizes="100vw"
-              style={{
-                transform: 'translateZ(0)', // Force hardware acceleration
-              }}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-white/10 to-black/10 z-10" />
           </div>
@@ -71,8 +71,9 @@ export default async function GalleryPage() {
                   <Card className="group cursor-pointer overflow-hidden border-0 p-0 shadow-md transition-all duration-300 hover:shadow-lg">
                     <CardContent className="p-0">
                       <div className="relative aspect-[4/3] overflow-hidden">
-                        <Image
+                        <CmsMedia
                           src={album.cover_img}
+                          mediaType={album.cover_img_type}
                           alt={album.title}
                           fill
                           className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -118,8 +119,9 @@ export default async function GalleryPage() {
                       <Card className="group cursor-pointer overflow-hidden border-0 p-0 shadow-md transition-all duration-300 hover:shadow-lg h-full">
                         <CardContent className="p-0 h-full">
                           <div className="relative h-full overflow-hidden">
-                            <Image
+                            <CmsMedia
                               src={album.cover_img}
+                              mediaType={album.cover_img_type}
                               alt={album.title}
                               fill
                               className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -168,8 +170,9 @@ export default async function GalleryPage() {
                       <Card className="group cursor-pointer overflow-hidden border-0 p-0 shadow-md transition-all duration-300 hover:shadow-lg h-full">
                         <CardContent className="p-0 h-full">
                           <div className="relative h-full overflow-hidden">
-                            <Image
+                            <CmsMedia
                               src={album.cover_img}
+                              mediaType={album.cover_img_type}
                               alt={album.title}
                               fill
                               className="object-cover transition-transform duration-300 group-hover:scale-105"

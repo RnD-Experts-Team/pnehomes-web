@@ -1,6 +1,7 @@
 import { AboutUsData, AboutUsResponse, ContactInfo } from '../model/types'
+import { cmsUrl } from '@/lib/cms'
 
-const API_URL = 'https://cms.pnehomes.com/api/about-us'
+const API_URL = cmsUrl('/api/about-us')
 
 /**
  * Repository class for handling aboutUs data operations from API

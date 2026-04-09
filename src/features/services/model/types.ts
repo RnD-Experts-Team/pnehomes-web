@@ -53,6 +53,7 @@ export interface ServiceRepository {
   getById(id: number): Promise<Service | null>
   getBySlug(slug: string): Promise<Service | null>
   getCover(): Promise<string>
+  getCoverType(): Promise<MediaType>
   searchByTitle(query: string): Promise<Services>
   getPaginated(
     page?: number,

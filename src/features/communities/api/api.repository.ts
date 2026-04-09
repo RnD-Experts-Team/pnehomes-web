@@ -1,12 +1,8 @@
 // src/repository/api.repository.ts
 import { Community, CommunitiesPageData, MediaType } from '../model/types'
+import { cmsUrl } from '@/lib/cms'
 
-/**
- * If you prefer to configure this per env, set CMS_COMMUNITIES_URL in your runtime env
- * and keep the default as a safe fallback.
- */
-const DEFAULT_API_URL = 'https://cms.pnehomes.com/api/communities'
-const API_URL = process.env.CMS_COMMUNITIES_URL || DEFAULT_API_URL
+const API_URL = cmsUrl('/api/communities')
 
 type CmsEnvelope<T> = {
   success: boolean

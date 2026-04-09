@@ -5,10 +5,14 @@ import Image from 'next/image'
 import { Gallery, Item } from 'react-photoswipe-gallery'
 import 'photoswipe/style.css'
 import { Badge } from '@/components/ui/badge'
+import { CmsMedia, type MediaType } from '@/components/CmsMedia'
+import { ResponsiveMedia } from '@/features/home/components/ResponsiveMedia'
+import { normalizeDriveVideoUrl } from '@/features/home/model/url.utils'
 import type React from 'react'
 
 interface ImageGalleryProps {
   images: string[]
+  imageTypes?: (MediaType)[]
   title: string
   maxVisibleImages?: number
 }
@@ -36,18 +40,22 @@ const galleryOptions = {
   pswpModule: () => import('photoswipe'),
 }
 
-type LightboxImageProps = {
+type LightboxContentProps = {
   src: string
   alt: string
+  mediaType?: MediaType
 }
 
-/**
- * Custom slide content:
- * PhotoSwipe treats this as generic HTML and just scales the container.
- * The <img> itself keeps its real aspect ratio via CSS (object-contain),
- * so you don't get the "first open stretched, second open correct" issue.
- */
-function LightboxImage({ src, alt }: LightboxImageProps) {
+function LightboxContent({ src, alt, mediaType }: LightboxContentProps) {
+  if (mediaType === 'video') {
+    const videoSrc = normalizeDriveVideoUrl(src)
+    return (
+      <div className="relative h-full w-full bg-black flex items-center justify-center">
+        <ResponsiveMedia src={videoSrc} className="w-full h-full" />
+      </div>
+    )
+  }
+
   const normalized = normalizeGoogleUrl(src)
 
   return (
@@ -66,6 +74,7 @@ function LightboxImage({ src, alt }: LightboxImageProps) {
 
 export default function ImageGallery({
   images,
+  imageTypes,
   title,
   maxVisibleImages = 3,
 }: ImageGalleryProps) {
@@ -91,7 +100,7 @@ export default function ImageGallery({
       {hidden.map((src, i) => (
         <Item
           key={`hidden-${i}`}
-          content={<LightboxImage src={src} alt={title} />}
+          content={<LightboxContent src={src} alt={title} mediaType={imageTypes?.[maxVisibleImages + i]} />}
         >
           {({ ref }) => (
             <span
@@ -105,15 +114,16 @@ export default function ImageGallery({
       <div>
         {/* Main image (layout same as before) */}
         {visible[0] && (
-          <Item content={<LightboxImage src={visible[0]} alt={title} />}>
+          <Item content={<LightboxContent src={visible[0]} alt={title} mediaType={imageTypes?.[0]} />}>
             {({ ref, open }) => (
               <div
                 ref={adaptRef<HTMLDivElement>(ref as PswpRef)}
                 className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-lg"
                 onClick={open}
               >
-                <Image
+                <CmsMedia
                   src={visible[0]}
+                  mediaType={imageTypes?.[0]}
                   alt={title}
                   fill
                   className="object-cover transition-transform group-hover:scale-105"
@@ -131,7 +141,7 @@ export default function ImageGallery({
             {visible.slice(1).map((src, i, arr) => (
               <Item
                 key={`thumb-${i}`}
-                content={<LightboxImage src={src} alt={`${title} photo ${i + 2}`} />}
+                content={<LightboxContent src={src} alt={`${title} photo ${i + 2}`} mediaType={imageTypes?.[i + 1]} />}
               >
                 {({ ref, open }) => (
                   <div
@@ -139,8 +149,9 @@ export default function ImageGallery({
                     className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-md"
                     onClick={open}
                   >
-                    <Image
+                    <CmsMedia
                       src={src}
+                      mediaType={imageTypes?.[i + 1]}
                       alt={`${title} photo ${i + 2}`}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"

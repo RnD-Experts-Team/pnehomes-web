@@ -1,9 +1,9 @@
-import { getGallerySubAlbum, getGalleryContactInfo, getGalleryCover } from '@/features/gallery/api'
+import { getGallerySubAlbum, getGalleryContactInfo, getGalleryCoverData } from '@/features/gallery/api'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import GalleryContent from '@/features/gallery/components/GalleryContent'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 
 interface SubAlbumPageProps {
   params: Promise<{ slug: string; subSlug: string }>
@@ -18,10 +18,10 @@ export default async function SubAlbumPage({ params }: SubAlbumPageProps) {
 
     console.log('[SubAlbumPage] Loading sub-album:', { slug, subSlug })
 
-    const [result, contactInfo, cover] = await Promise.all([
+    const [result, contactInfo, { cover, cover_type: coverType }] = await Promise.all([
       getGallerySubAlbum(slug, subSlug),
       getGalleryContactInfo(),
-      getGalleryCover(),
+      getGalleryCoverData(),
     ])
 
     console.log('[SubAlbumPage] Data loaded:', {
@@ -45,9 +45,11 @@ export default async function SubAlbumPage({ params }: SubAlbumPageProps) {
       <div className="relative">
         {/* Hero / Title */}
         <section className="relative isolate overflow-hidden h-[60vh]">
-          <Image
+          <CmsMedia
             src={cover}
+            mediaType={coverType}
             alt="Gallery Cover"
+            isCover
             fill
             className="object-cover md:fixed md:inset-0 md:h-screen md:w-full"
             priority

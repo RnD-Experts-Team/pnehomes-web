@@ -1,6 +1,6 @@
 import { PrivacyPolicyAPI } from '@/features/privacyPolicy/api'
 import Link from 'next/link'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 
 export default async function PrivacyPolicyPage() {
   // Fetch privacy policy data
@@ -31,8 +31,10 @@ export default async function PrivacyPolicyPage() {
         <section className="relative isolate h-[60vh] overflow-hidden">
           {/* Parallax background image container */}
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={coverImage}
+              mediaType={data.cover_type}
+              isCover
               alt="Privacy Policy Hero"
               fill
               className="object-cover object-center"

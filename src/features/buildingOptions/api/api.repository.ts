@@ -1,5 +1,6 @@
 // src/repositories/api.repository.ts
 import type { BuildingOptionsData, BuildingOption, Article, ArticlesSection } from '../model/types'
+import { cmsUrl } from '@/lib/cms'
 
 /**
  * Raw API response shapes
@@ -49,7 +50,7 @@ export class BuildingOptionsApiRepository {
   private readonly ttlMs: number
 
   constructor(
-    baseUrl = 'https://cms.pnehomes.com/api',
+    baseUrl = cmsUrl('/api'),
     path = '/building-options',
     // optional TTL to refresh cache periodically if desired (default: 10 minutes)
     ttlMs = 10 * 60 * 1000

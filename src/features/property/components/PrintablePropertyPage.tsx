@@ -1,10 +1,12 @@
 import React from 'react'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
+import type { MediaType } from '@/components/CmsMedia'
 import { Badge } from '@/components/ui/badge'
 import { CircleDollarSignIcon, Bed, Bath, Car, Map } from 'lucide-react'
 
 interface FloorPlan {
   img: string
+  img_type?: MediaType
   title: string
   Description?: string
 }
@@ -20,6 +22,7 @@ interface Property {
   garages?: string;
   sqft?: string;
   gallery?: string[];
+  gallery_types?: MediaType[];
   zillow_link?: string | null;
   Whats_special?: {
     badges?: string[];
@@ -100,8 +103,9 @@ const PrintablePropertyPage = React.forwardRef<HTMLDivElement, PrintableProperty
             <div className="grid grid-cols-2 gap-4">
               {gallery.map((image, index) => (
                 <div key={index} className="relative aspect-[4/3] overflow-hidden rounded-lg">
-                  <Image
+                  <CmsMedia
                     src={image}
+                    mediaType={p.gallery_types?.[index]}
                     alt={`${p.title} photo ${index + 1}`}
                     fill
                     className="object-cover"
@@ -179,8 +183,9 @@ const PrintablePropertyPage = React.forwardRef<HTMLDivElement, PrintableProperty
                 >
                   <h3 className="mb-4 text-lg font-medium">{plan.title}</h3>
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
-                    <Image
+                    <CmsMedia
                       src={plan.img}
+                      mediaType={plan.img_type}
                       alt={plan.title}
                       fill
                       className="object-cover"

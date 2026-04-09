@@ -97,6 +97,7 @@ export const PropertySchema = z.object({
   garages: z.string(),
   sqft: z.string(),
   gallery: z.array(z.string()).default([]),
+  gallery_types: z.array(MediaTypeSchema).optional().default([]),
   zillow_link: z.string().optional().nullable(),
   Whats_special: WhatsSpecialSchema.optional().nullable(),
   Facts_features: z.array(FactsFeatureSchema).optional(),
