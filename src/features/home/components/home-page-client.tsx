@@ -405,6 +405,7 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                   mediaType={gridSection.video_type}
                   alt="Featured video"
                   fill
+                  forcePlay
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 33vw"
                   videoProps={{ autoPlay: true, muted: true, loop: true, playsInline: true }}
@@ -498,6 +499,7 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                   mediaType={gridSection.logo_type}
                   alt="PNE Homes Logo"
                   fill
+                  forcePlay
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 33vw"
                   videoProps={{ autoPlay: true, muted: true, loop: true, playsInline: true }}
