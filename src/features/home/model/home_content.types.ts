@@ -41,6 +41,7 @@ export interface GridSection {
 
 export interface FirstSection {
   video: string
+  video_type: MediaType
   'cover-for-mobile': string
   'cover-for-mobile-type': MediaType
   logo: string

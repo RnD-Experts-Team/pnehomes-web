@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { communitiesAPI } from '@/features/communities/api'
 import ImageGallery from '@/components/ImageGallery'
 import RequestTourButton from '@/components/RequestTourButton'
-import { ResponsiveMedia } from '@/features/home/components/ResponsiveMedia'
 import { Bed, Bath, Car, Map } from 'lucide-react'
 import { replacePlaceholders } from '@/lib/utils'
 
@@ -91,19 +90,20 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           </Card>
         </div>
 
-        {/* Video Section */}
+        {/* Video/Media Section */}
         {community.video && (
           <section className="mt-12">
             <Card>
               <CardContent className="p-2">
                 <div className="relative aspect-video overflow-hidden rounded-lg bg-gray-100">
-                  <ResponsiveMedia
+                  <CmsMedia
                     src={community.video}
-                    className="h-full w-full object-cover"
-                    autoPlay={false}
-                    muted={true}
-                    loop={false}
-                    playsInline={true}
+                    mediaType={community.video_type}
+                    alt={`${community.title} video`}
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 66vw, 100vw"
+                    videoProps={{ autoPlay: false, muted: true, loop: false, playsInline: true }}
                   />
                 </div>
               </CardContent>

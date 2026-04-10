@@ -14,7 +14,6 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel'
 import { Calendar, Pencil, Home as HomeIcon } from 'lucide-react'
-import { ResponsiveMedia } from '@/features/home/components/ResponsiveMedia'
 import { HomeContent, Testimonial } from '@/features/home/model/home_content.types'
 
 // --- Testimonials Carousel (unchanged) ---
@@ -151,10 +150,15 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
       <section className="relative z-10 h-[100svh] min-h-[560px] w-full overflow-hidden">
         {/* Solid gray cover for md+ screens (under video/image) */}
         <div className="absolute inset-0 hidden md:block bg-gray-300" aria-hidden />
-        {/* Video for larger screens */}
-        <ResponsiveMedia
+        {/* Video/Image for larger screens */}
+        <CmsMedia
           src={firstSection.video}
-          className="absolute inset-0 hidden h-full w-full object-cover sm:block"
+          mediaType={firstSection.video_type}
+          alt="Hero background"
+          fill
+          className="hidden object-cover sm:block"
+          sizes="100vw"
+          videoProps={{ autoPlay: true, muted: true, loop: true, playsInline: true }}
         />
         {/* Cover image for mobile screens */}
         <div className="absolute inset-0 h-full w-full bg-gray-100 sm:hidden">
@@ -387,7 +391,7 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                 </Link>
               </motion.div>
 
-              {/* Center video - hidden on small screens */}
+              {/* Center video/image - hidden on small screens */}
               <motion.div
                 className="relative hidden h-64 overflow-hidden rounded-xl md:block"
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -395,9 +399,14 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                 transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
                 viewport={{ once: true, amount: 0.3 }}
               >
-                <ResponsiveMedia
+                <CmsMedia
                   src={gridSection.video}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  mediaType={gridSection.video_type}
+                  alt="Featured video"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  videoProps={{ autoPlay: true, muted: true, loop: true, playsInline: true }}
                 />
                 <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-black/5" />
               </motion.div>
@@ -483,18 +492,16 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                 transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}
                 viewport={{ once: true, amount: 0.3 }}
               >
-                <ResponsiveMedia
+                <CmsMedia
                   src={gridSection.logo}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  mediaType={gridSection.logo_type}
+                  alt="PNE Homes Logo"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  videoProps={{ autoPlay: true, muted: true, loop: true, playsInline: true }}
                 />
                 <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-black/5" />
-                {/* <Image
-                  src={gridSection.logo}
-                  alt="PNE Homes Logo"
-                  width={320}
-                  height={160}
-                  className="h-auto w-[200px] object-contain md:w-[260px] lg:w-[320px]"
-                /> */}
               </motion.div>
 
               {/* Custom Homes */}

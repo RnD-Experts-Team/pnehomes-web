@@ -18,6 +18,7 @@ import { normalizeDriveImageUrl, normalizeDriveCoverImage, normalizeDriveVideoUr
 
 const mapFirstSection = (src: ApiHomeData['first_section']): FirstSection => ({
   video: '/vid/first.mp4', // Use local video file instead of API value
+  video_type: 'video' as FirstSection['video_type'],
   'cover-for-mobile': normalizeDriveCoverImage(src.mobile_cover),
   'cover-for-mobile-type': (src.mobile_cover_type as FirstSection['cover-for-mobile-type']) ?? null,
   logo: normalizeDriveImageUrl(src.logo),
