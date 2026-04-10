@@ -51,7 +51,7 @@ function LightboxContent({ src, alt, mediaType }: LightboxContentProps) {
     const videoSrc = normalizeDriveVideoUrl(src)
     return (
       <div className="relative h-full w-full bg-black flex items-center justify-center">
-        <ResponsiveMedia src={videoSrc} className="w-full h-full" />
+        <ResponsiveMedia src={videoSrc} className="w-full h-full object-contain" />
       </div>
     )
   }

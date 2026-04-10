@@ -58,7 +58,8 @@ function getWindowedPages(current: number, total: number) {
   return pages
 }
 
-export default async function Page({ searchParams }: { searchParams: SP }) {
+export default async function Page({ searchParams: searchParamsPromise }: { searchParams: Promise<SP> }) {
+  const searchParams = await searchParamsPromise
   const params = {
     community: typeof searchParams.community === 'string' ? searchParams.community : undefined,
     price: toNum(searchParams.price),

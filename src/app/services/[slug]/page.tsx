@@ -5,13 +5,14 @@ import { getServiceBySlug, getCover, getCoverType } from '@/features/services/ap
 import ServicePageClient from './service-page-client'
 
 interface ServicePageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export default async function ServicePage({ params }: ServicePageProps) {
-  const response = await getServiceBySlug(params.slug)
+  const { slug } = await params
+  const response = await getServiceBySlug(slug)
 
   if (!response.success || !response.data) {
     notFound()

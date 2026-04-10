@@ -101,18 +101,26 @@ export default function ArticlePage({ params }: ArticlePageProps) {
     <main className="min-h-screen">
       {/* Hero Section with Cover Image */}
       {buildingOptionsData.cover && (
-        <section className="relative isolate">
-          {/* Background image (fixed) */}
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat md:bg-fixed"
-            style={{ backgroundImage: `url(${buildingOptionsData.cover})` }}
-          />
-          {/* Overlay */}
-          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-white/10 to-black/10" />
+        <section className="relative isolate overflow-hidden h-[60vh]">
+          {/* Parallax background image container */}
+          <div className="fixed inset-0 -z-10 bg-gray-100">
+            <CmsMedia
+              src={buildingOptionsData.cover}
+              mediaType={buildingOptionsData.cover_type}
+              isCover
+              alt="Article Hero"
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+              style={{
+                transform: 'translateZ(0)', // Force hardware acceleration
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-white/10 to-black/10 z-10" />
+          </div>
 
           {/* Centered content */}
-          <div className="container mx-auto flex min-h-[60vh] items-center justify-center px-6 text-center">
+          <div className="relative z-20 container mx-auto flex h-full items-center justify-center px-6 text-center">
             <h1 className="text-pne-brand text-4xl font-extrabold tracking-tight uppercase sm:text-5xl max-w-[800px] mx-auto break-words">
               {article.title}
             </h1>

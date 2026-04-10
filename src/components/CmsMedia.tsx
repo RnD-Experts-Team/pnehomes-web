@@ -56,10 +56,15 @@ export function CmsMedia({
 
   if (mediaType === 'video') {
     const videoSrc = normalizeDriveVideoUrl(src)
+    // When fill is true, mimic next/image fill: absolute + full size
+    const videoClassName = fill
+      ? `absolute inset-0 h-full w-full ${className ?? ''}`
+      : className
     return (
       <ResponsiveMedia
         src={videoSrc}
-        className={className}
+        className={videoClassName}
+        style={style}
         autoPlay={videoProps?.autoPlay ?? true}
         muted={videoProps?.muted ?? true}
         loop={videoProps?.loop ?? true}

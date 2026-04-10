@@ -24,11 +24,11 @@ export default async function Page({
   params,
   searchParams,
 }: {
-  params: { slug: string }
-  searchParams: Record<string, string | string[] | undefined>
+  params: Promise<{ slug: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const { slug } = params
-  const sp = searchParams
+  const { slug } = await params
+  const sp = await searchParams
 
   const p = await Property.getBySlug(slug)
   if (!p) return notFound()
@@ -162,7 +162,7 @@ export default async function Page({
             {gallery.length > 0 && (
               <Card>
                 <CardContent className="p-2">
-                  <ImageGallery images={gallery} title={p.title} maxVisibleImages={5} />
+                  <ImageGallery images={gallery} imageTypes={p.gallery_types?.map(t => t ?? null)} title={p.title} maxVisibleImages={5} />
 
                   {/* Responsive Property Stats */}
                   <div className="mt-5">

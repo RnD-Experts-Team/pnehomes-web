@@ -214,6 +214,7 @@ function CompareContent() {
               <div className="relative aspect-[4/3]">
                 <CmsMedia
                   src={property.gallery[0] ?? '/img/placeholder.jpg'}
+                  mediaType={property.gallery_types?.[0]}
                   alt={property.title}
                   fill
                   className="object-cover"

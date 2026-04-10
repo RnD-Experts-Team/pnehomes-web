@@ -5,6 +5,7 @@ import React from 'react'
 export function ResponsiveMedia({
   src,
   className,
+  style,
   autoPlay = true,
   muted = true,
   loop = true,
@@ -12,6 +13,7 @@ export function ResponsiveMedia({
 }: {
   src: string
   className?: string
+  style?: React.CSSProperties
   autoPlay?: boolean
   muted?: boolean
   loop?: boolean
@@ -25,6 +27,7 @@ export function ResponsiveMedia({
       <iframe
         src={src}
         className={className}
+        style={{ border: 0, ...style }}
         allow="autoplay; fullscreen"
         allowFullScreen
       />
@@ -39,6 +42,7 @@ export function ResponsiveMedia({
       loop={loop}
       playsInline={playsInline}
       className={className}
+      style={style}
     >
       <source src={src} type="video/mp4" />
     </video>

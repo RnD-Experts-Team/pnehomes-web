@@ -86,6 +86,7 @@ export default async function EventsPage() {
                     <div className={`p-6 md:p-8 ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
                       <ImageGallery 
                         images={event.gallery.map(g => typeof g === 'string' ? g : g.url)} 
+                        imageTypes={event.gallery.map(g => typeof g === 'string' ? null : g.type)}
                         title={event.title}
                         maxVisibleImages={4}
                       />
