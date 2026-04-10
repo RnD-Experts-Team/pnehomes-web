@@ -76,6 +76,14 @@ const ApiFloorPlanLoose = z.object({
   description: z.string().optional(),
 })
 
+const ApiGalleryItem = z.union([
+  z.string(),
+  z.object({
+    url: z.string(),
+    type: z.union([z.literal('image'), z.literal('video'), z.null()]).optional(),
+  }),
+])
+
 
 const ApiProperty = z.object({
   id: z.number(),
@@ -87,7 +95,7 @@ const ApiProperty = z.object({
   baths: z.union([z.string(), z.number()]),
   garages: z.union([z.string(), z.number()]),
   sqft: z.union([z.string(), z.number()]),
-  gallery: z.array(z.string()).default([]),
+  gallery: z.array(ApiGalleryItem).default([]),
   gallery_types: z.array(z.union([z.literal('image'), z.literal('video'), z.null()])).optional().default([]),
   zillow_link: z.string().nullable().optional(),
   Whats_special: ApiWhatsSpecial,
@@ -154,6 +162,18 @@ function normalizeFloorPlans(
 }
 
 function normalizeProperty(p: z.infer<typeof ApiProperty>): Property {
+  const normalizedGallery = (p.gallery ?? []).map(item =>
+    typeof item === 'string' ? item : item.url
+  )
+  const normalizedGalleryTypes = normalizedGallery.map((_, index) => {
+    const item = p.gallery?.[index]
+    if (typeof item === 'string') {
+      return p.gallery_types?.[index] ?? null
+    }
+
+    return item.type ?? p.gallery_types?.[index] ?? null
+  })
+
   return {
     id: p.id,
     slug: p.slug,
@@ -164,8 +184,8 @@ function normalizeProperty(p: z.infer<typeof ApiProperty>): Property {
     baths: toStringNumberish(p.baths),
     garages: toStringNumberish(p.garages),
     sqft: toStringNumberish(p.sqft),
-    gallery: p.gallery ?? [],
-    gallery_types: p.gallery_types ?? [],
+    gallery: normalizedGallery,
+    gallery_types: normalizedGalleryTypes,
     zillow_link: p.zillow_link ?? null,
     Whats_special:
       p.Whats_special && (p.Whats_special.badges || p.Whats_special.description)
