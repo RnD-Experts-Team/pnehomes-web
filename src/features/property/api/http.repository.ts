@@ -1,7 +1,7 @@
 /**
  * Property HTTP Repository
  *
- * Calls your REST API (`GET https://cms.pnehomes.com/api/properties`) and normalizes the response
+ * Calls your REST API (`GET /api/properties` via PROPERTIES_API) and normalizes the response
  * into your internal types. It preserves the same function signatures as the
  * previous file-based repository so the rest of your app doesn't need to change.
  */
@@ -9,6 +9,9 @@
 import { z } from 'zod'
 import type { Property, Contact } from '../model/types'
 import type { ListParams } from '../model/selectors'
+import { cmsUrl } from '@/lib/cms'
+
+const PROPERTIES_API = cmsUrl('/api/properties')
 
 /* -------------------------------------------------------
  * Helpers
@@ -68,6 +71,7 @@ const ApiFactsFeature = z.object({
 const ApiFloorPlanLoose = z.object({
   title: z.string(),
   img: z.union([z.string(), z.null()]).optional(), // allow null/missing
+  img_type: z.string().nullable().optional(),
   Description: z.string().optional(),
   description: z.string().optional(),
 })
@@ -84,6 +88,7 @@ const ApiProperty = z.object({
   garages: z.union([z.string(), z.number()]),
   sqft: z.union([z.string(), z.number()]),
   gallery: z.array(z.string()).default([]),
+  gallery_types: z.array(z.union([z.literal('image'), z.literal('video'), z.null()])).optional().default([]),
   zillow_link: z.string().nullable().optional(),
   Whats_special: ApiWhatsSpecial,
   Facts_features: z.array(ApiFactsFeature).optional().default([]),
@@ -105,6 +110,7 @@ const ApiDataEnvelope = z.object({
   data: z.object({
     title: z.string().optional().default('Floor Plans'),
     cover: z.string().nullable().optional(), // allow null/missing
+    cover_type: z.string().nullable().optional(),
     properties: z.array(ApiProperty),
     pagination: ApiPagination.optional(),
     filters: z
@@ -136,11 +142,12 @@ function toStringNumberish(v: string | number | undefined | null): string {
 
 function normalizeFloorPlans(
   p: z.infer<typeof ApiProperty>
-): Array<{ title: string; img: string; Description: string }> {
+): Array<{ title: string; img: string; img_type: 'image' | 'video' | null; Description: string }> {
   const plans = p.floor_plans ?? p.Floor_plans ?? []
   return plans.map(fp => ({
     title: fp.title,
     img: fp.img ?? '', // handle null/missing
+    img_type: (fp.img_type as 'image' | 'video' | null) ?? null,
     // normalize to capital-D `Description` to match your existing types
     Description: fp.Description ?? fp.description ?? '',
   }))
@@ -158,6 +165,7 @@ function normalizeProperty(p: z.infer<typeof ApiProperty>): Property {
     garages: toStringNumberish(p.garages),
     sqft: toStringNumberish(p.sqft),
     gallery: p.gallery ?? [],
+    gallery_types: p.gallery_types ?? [],
     zillow_link: p.zillow_link ?? null,
     Whats_special:
       p.Whats_special && (p.Whats_special.badges || p.Whats_special.description)
@@ -182,7 +190,7 @@ function normalizeProperty(p: z.infer<typeof ApiProperty>): Property {
 export async function list(params: ListParams = {}): Promise<Property[]> {
   const qs = buildQuery(params)
   const envelope = ApiDataEnvelope.parse(
-    await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?${qs}`)
+    await getJson<ApiEnvelope>(`${PROPERTIES_API}?${qs}`)
   )
   return envelope.data.properties.map(normalizeProperty)
 }
@@ -194,7 +202,7 @@ export async function list(params: ListParams = {}): Promise<Property[]> {
 export async function getTotalFilteredCount(params: ListParams = {}): Promise<number> {
   const qs = buildQuery({ ...params, page: 1, limit: params.limit ?? 1 })
   const envelope = ApiDataEnvelope.parse(
-    await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?${qs}`)
+    await getJson<ApiEnvelope>(`${PROPERTIES_API}?${qs}`)
   )
   return envelope.data.pagination?.total ?? envelope.data.properties.length
 }
@@ -208,7 +216,7 @@ export async function getTotalFilteredCount(params: ListParams = {}): Promise<nu
 export async function getBySlug(slug: string): Promise<Property | undefined> {
   // 1) Try direct slug param (harmless if backend ignores it)
   try {
-    const url = `https://cms.pnehomes.com/api/properties?slug=${encodeURIComponent(slug)}&limit=1&page=1`
+    const url = `${PROPERTIES_API}?slug=${encodeURIComponent(slug)}&limit=1&page=1`
     const direct = ApiDataEnvelope.parse(await getJson<ApiEnvelope>(url))
     const hit = direct.data.properties.find(p => p.slug === slug)
     if (hit) return normalizeProperty(hit)
@@ -221,7 +229,7 @@ export async function getBySlug(slug: string): Promise<Property | undefined> {
   while (true) {
     const qs = buildQuery({ page, limit: 50 }) // larger page to reduce roundtrips
     const env = ApiDataEnvelope.parse(
-      await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?${qs}`)
+      await getJson<ApiEnvelope>(`${PROPERTIES_API}?${qs}`)
     )
     const found = env.data.properties.find(p => p.slug === slug)
     if (found) return normalizeProperty(found)
@@ -245,7 +253,7 @@ export async function allSlugs(): Promise<string[]> {
   do {
     const qs = buildQuery({ page, limit: 100 })
     const env = ApiDataEnvelope.parse(
-      await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?${qs}`)
+      await getJson<ApiEnvelope>(`${PROPERTIES_API}?${qs}`)
     )
     slugs.push(...env.data.properties.map(p => p.slug))
     last = env.data.pagination?.last_page ?? page
@@ -261,7 +269,7 @@ export async function allSlugs(): Promise<string[]> {
  */
 export async function getCommunities(): Promise<string[]> {
   const env = ApiDataEnvelope.parse(
-    await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?page=1&limit=1`)
+    await getJson<ApiEnvelope>(`${PROPERTIES_API}?page=1&limit=1`)
   )
   if (env.data.filters?.communities?.length) {
     return [...env.data.filters.communities].sort((a, b) => a.localeCompare(b))
@@ -274,7 +282,7 @@ export async function getCommunities(): Promise<string[]> {
   do {
     const qs = buildQuery({ page, limit: 100 })
     const pageEnv = ApiDataEnvelope.parse(
-      await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?${qs}`)
+      await getJson<ApiEnvelope>(`${PROPERTIES_API}?${qs}`)
     )
     pageEnv.data.properties.forEach(p => {
       if (p.community?.trim()) set.add(p.community.trim())
@@ -291,9 +299,16 @@ export async function getCommunities(): Promise<string[]> {
  */
 export async function getCoverImage(): Promise<string> {
   const env = ApiDataEnvelope.parse(
-    await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?page=1&limit=1`)
+    await getJson<ApiEnvelope>(`${PROPERTIES_API}?page=1&limit=1`)
   )
   return env.data.cover ?? ''
+}
+
+export async function getCoverType(): Promise<'image' | 'video' | null> {
+  const env = ApiDataEnvelope.parse(
+    await getJson<ApiEnvelope>(`${PROPERTIES_API}?page=1&limit=1`)
+  )
+  return (env.data.cover_type as 'image' | 'video' | null) ?? null
 }
 
 /**
@@ -301,7 +316,7 @@ export async function getCoverImage(): Promise<string> {
  */
 export async function getPageTitle(): Promise<string> {
   const env = ApiDataEnvelope.parse(
-    await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?page=1&limit=1`)
+    await getJson<ApiEnvelope>(`${PROPERTIES_API}?page=1&limit=1`)
   )
   return env.data.title ?? 'Floor Plans'
 }
@@ -312,7 +327,7 @@ export async function getPageTitle(): Promise<string> {
  */
 export async function getContactInfo(): Promise<Contact> {
   const env = ApiDataEnvelope.parse(
-    await getJson<ApiEnvelope>(`https://cms.pnehomes.com/api/properties?page=1&limit=1`)
+    await getJson<ApiEnvelope>(`${PROPERTIES_API}?page=1&limit=1`)
   )
   if (env.data.contact?.title && env.data.contact?.message) {
     return {

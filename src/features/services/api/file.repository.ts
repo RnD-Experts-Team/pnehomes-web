@@ -1,4 +1,4 @@
-import { Service, Services, ServiceRepository, ServicesData } from '../model/types'
+import { Service, Services, ServiceRepository, ServicesData, type MediaType } from '../model/types'
 import servicesData from '../mock/services.json'
 
 /**
@@ -39,6 +39,10 @@ export class FileServiceRepository implements ServiceRepository {
    */
   async getCover(): Promise<string> {
     return Promise.resolve(this.servicesData.cover)
+  }
+
+  async getCoverType(): Promise<MediaType> {
+    return Promise.resolve(this.servicesData.cover_type)
   }
 
   /**

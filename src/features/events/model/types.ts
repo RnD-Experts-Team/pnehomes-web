@@ -1,3 +1,10 @@
+export type MediaType = 'image' | 'video' | null
+
+export interface GalleryItem {
+  url: string
+  type: MediaType
+}
+
 /**
  * Event interface representing a single event
  * (updated to support 'id' and optional per-event 'cover' from the API)
@@ -6,7 +13,7 @@ export interface Event {
   id?: number
   title: string
   description: string
-  gallery: string[]
+  gallery: GalleryItem[]
   cover?: string
 }
 
@@ -23,6 +30,7 @@ export interface Contact {
  */
 export interface EventsData {
   cover: string
+  cover_type: MediaType
   title: string
   slogan: string
   events: Event[]
@@ -47,11 +55,12 @@ export interface RawEvent {
   title: string
   description: string
   cover?: string
-  gallery: string[]
+  gallery: GalleryItem[]
 }
 
 export interface RawEventsData {
   cover: string
+  cover_type?: string | null
   slogan: string
   title: string
   events: RawEvent[]

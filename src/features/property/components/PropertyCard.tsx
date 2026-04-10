@@ -3,7 +3,7 @@
 // src/features/property/components/PropertyCard.tsx
 
 import Link from 'next/link'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import { useSearchParams } from 'next/navigation'
 import type { Property } from '../model/types'
 import { Card, CardContent } from '@/components/ui/card'
@@ -41,8 +41,9 @@ export default function PropertyCard({ p }: { p: Property }) {
       <Card className="group cursor-pointer overflow-hidden p-0 transition-shadow hover:shadow-lg">
         {p.gallery && p.gallery[0] && (
           <div className="relative aspect-[5/3]">
-            <Image
+            <CmsMedia
               src={p.gallery[0]}
+              mediaType={p.gallery_types?.[0]}
               alt={p.title}
               fill
               sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"

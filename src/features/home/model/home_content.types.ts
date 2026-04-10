@@ -1,3 +1,5 @@
+export type MediaType = 'image' | 'video' | null
+
 export interface HeroSection {
   icon: string
   title: string
@@ -18,6 +20,7 @@ export interface ServiceLink {
 export interface Services {
   title: string
   cover: string
+  cover_type: MediaType
   description: string | null
   links: ServiceLink[]
 }
@@ -25,18 +28,23 @@ export interface Services {
 export interface LinkItem {
   title: string
   cover: string
+  cover_type: MediaType
 }
 
 export interface GridSection {
   video: string
+  video_type: MediaType
   logo: string
+  logo_type: MediaType
   links: LinkItem[]
 }
 
 export interface FirstSection {
   video: string
   'cover-for-mobile': string
+  'cover-for-mobile-type': MediaType
   logo: string
+  logo_type: MediaType
   title: string
   subtitle: string | null
   'book-button': string | null

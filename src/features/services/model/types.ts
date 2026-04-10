@@ -1,8 +1,11 @@
+export type MediaType = 'image' | 'video' | null
+
 /**
  * Content item interface for service sections
  */
 export interface ServiceContentItem {
   img: string
+  img_type: MediaType
   sub_title: string
   description: string
 }
@@ -38,6 +41,7 @@ export type Services = Service[]
  */
 export interface ServicesData {
   cover: string
+  cover_type: MediaType
   services: Services
 }
 
@@ -49,6 +53,7 @@ export interface ServiceRepository {
   getById(id: number): Promise<Service | null>
   getBySlug(slug: string): Promise<Service | null>
   getCover(): Promise<string>
+  getCoverType(): Promise<MediaType>
   searchByTitle(query: string): Promise<Services>
   getPaginated(
     page?: number,

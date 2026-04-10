@@ -1,7 +1,7 @@
 // src/app/services/[slug]/page.tsx
 
 import { notFound } from 'next/navigation'
-import { getServiceBySlug, getCover } from '@/features/services/api'
+import { getServiceBySlug, getCover, getCoverType } from '@/features/services/api'
 import ServicePageClient from './service-page-client'
 
 interface ServicePageProps {
@@ -19,11 +19,14 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   const service = response.data
 
-  // Get cover image
-  const coverResponse = await getCover()
+  // Get cover image and type
+  const [coverResponse, coverType] = await Promise.all([
+    getCover(),
+    getCoverType(),
+  ])
   const coverImage = coverResponse.success ? coverResponse.data : null
 
-  return <ServicePageClient service={service} coverImage={coverImage} />
+  return <ServicePageClient service={service} coverImage={coverImage} coverType={coverType} />
 }
 
 // Generate static params for all services (optional, for better performance)

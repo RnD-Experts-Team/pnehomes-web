@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { cmsUrl } from '@/lib/cms'
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -159,7 +160,7 @@ function OwnLandContactForm() {
       setSubmitError(null)
       setSubmitSuccess(false)
 
-      const response = await fetch('https://cms.pnehomes.com/api/contact-entries', {
+      const response = await fetch(cmsUrl('/api/contact-entries'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

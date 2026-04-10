@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import {
   Select,
   SelectContent,
@@ -83,8 +83,10 @@ export default function CommunitiesPageClient({ subtitle }: CommunitiesPageProps
         {/* Parallax background image container */}
         {pageData?.cover ? (
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={pageData.cover}
+              mediaType={pageData.cover_type}
+              isCover
               alt="Communities Cover"
               fill
               className="object-cover object-center"
@@ -180,8 +182,9 @@ export default function CommunitiesPageClient({ subtitle }: CommunitiesPageProps
                   <div className="overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:scale-105 hover:-translate-y-1">
                     {/* Community Image */}
                     <div className="relative h-32 overflow-hidden">
-                      <Image
+                      <CmsMedia
                         src={community.card_image}
+                        mediaType={community.card_image_type}
                         alt={community.title}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-110"

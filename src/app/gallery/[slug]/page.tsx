@@ -1,7 +1,7 @@
-import { getGalleryAlbumBySlug, getGalleryContactInfo, getGalleryCover } from '@/features/gallery/api'
+import { getGalleryAlbumBySlug, getGalleryContactInfo, getGalleryCoverData } from '@/features/gallery/api'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import GalleryContent from '@/features/gallery/components/GalleryContent'
@@ -19,10 +19,10 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
 
     console.log('[AlbumPage] Loading album:', slug)
 
-    const [album, contactInfo, cover] = await Promise.all([
+    const [album, contactInfo, { cover, cover_type: coverType }] = await Promise.all([
       getGalleryAlbumBySlug(slug),
       getGalleryContactInfo(),
-      getGalleryCover(),
+      getGalleryCoverData(),
     ])
 
     console.log('[AlbumPage] Data loaded:', {
@@ -46,16 +46,15 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
         <section className="relative isolate overflow-hidden h-[60vh]">
           {/* Parallax background image container */}
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={cover}
+              mediaType={coverType}
               alt={album.title}
+              isCover
               fill
               className="object-cover object-center"
               priority
               sizes="100vw"
-              style={{
-                transform: 'translateZ(0)', // Force hardware acceleration
-              }}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-white/10 to-black/10 z-10" />
           </div>
@@ -92,8 +91,9 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
                     <Card className="group cursor-pointer overflow-hidden border-0 p-0 shadow-md transition-all duration-300 hover:shadow-lg h-80">
                       <CardContent className="p-0 h-full">
                         <div className="relative h-full overflow-hidden">
-                          <Image
+                          <CmsMedia
                             src={subAlbum.cover_img}
+                            mediaType={subAlbum.cover_img_type}
                             alt={subAlbum.title}
                             fill
                             className="object-cover transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"

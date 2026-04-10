@@ -1,7 +1,7 @@
 'use client'
 
 import { notFound, useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import { use, useEffect, useState } from 'react'
 import { getBuildingOptions, getArticleBySlug } from '@/features/buildingOptions/api'
 import { Button } from '@/components/ui/button'
@@ -133,8 +133,9 @@ export default function ArticlePage({ params }: ArticlePageProps) {
 
           {/* Article Main Image */}
           <figure className="relative mb-6 h-48 w-full overflow-hidden rounded-lg sm:mb-8 sm:h-64 sm:rounded-xl md:h-80 lg:mb-10 lg:h-96 xl:h-[500px]">
-            <Image
+            <CmsMedia
               src={article.img}
+              mediaType={article.img_type}
               alt={article.title}
               fill
               className="object-cover"

@@ -12,6 +12,9 @@
 
 import { z } from 'zod'
 
+export const MediaTypeSchema = z.enum(['image', 'video']).nullable().optional()
+export type MediaType = 'image' | 'video' | null
+
 /**
  * Schema for the "What's Special" section of a property
  *
@@ -49,6 +52,7 @@ const FactsFeatureSchema = z.object({
 const FloorPlanSchema = z.object({
   title: z.string(),
   img: z.string(),
+  img_type: MediaTypeSchema.default(null),
   Description: z.string(),
 })
 
@@ -93,6 +97,7 @@ export const PropertySchema = z.object({
   garages: z.string(),
   sqft: z.string(),
   gallery: z.array(z.string()).default([]),
+  gallery_types: z.array(MediaTypeSchema).optional().default([]),
   zillow_link: z.string().optional().nullable(),
   Whats_special: WhatsSpecialSchema.optional().nullable(),
   Facts_features: z.array(FactsFeatureSchema).optional(),
@@ -144,6 +149,7 @@ export type FloorPlan = z.infer<typeof FloorPlanSchema>
 export type PropertyData = {
   title: string
   cover?: string | null // allow null/missing
+  cover_type: MediaType
   properties: Property[]
   contact: Contact
 }

@@ -1,6 +1,7 @@
 import { AboutUsData, AboutUsResponse, ContactInfo } from '../model/types'
+import { cmsUrl } from '@/lib/cms'
 
-const API_URL = 'https://cms.pnehomes.com/api/about-us'
+const API_URL = cmsUrl('/api/about-us')
 
 /**
  * Repository class for handling aboutUs data operations from API
@@ -27,6 +28,7 @@ export class AboutUsApiRepository {
       // Normalize the data so frontend structure stays consistent
       const data: AboutUsData = {
         cover: result?.data?.cover ?? '',
+        cover_type: result?.data?.cover_type ?? null,
         slogan: result?.data?.slogan ?? '',
         title: result?.data?.title ?? '',
         description: result?.data?.content ?? '', // map `content` -> `description`

@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { CmsMedia } from '@/components/CmsMedia'
 import { Button } from '@/components/ui/button'
 import {
   Carousel,
@@ -136,9 +136,11 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
       {/* Full Page Services Background Image */}
       {isLoaded && services.cover && (
         <div className="fixed inset-0 z-0">
-          <Image
+          <CmsMedia
             src={services.cover}
+            mediaType={services.cover_type}
             alt="Services background"
+            isCover
             fill
             className="object-cover object-center"
             sizes="100vw"
@@ -157,9 +159,11 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
         {/* Cover image for mobile screens */}
         <div className="absolute inset-0 h-full w-full bg-gray-100 sm:hidden">
           {isLoaded && firstSection['cover-for-mobile'] && (
-            <Image
+            <CmsMedia
               src={firstSection['cover-for-mobile']}
+              mediaType={firstSection['cover-for-mobile-type']}
               alt="Mobile cover image"
+              isCover
               fill
               className="object-cover object-center"
               priority
@@ -173,7 +177,7 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
           <div className="mx-auto max-w-4xl text-center text-white">
             {firstSection.logo && (
               <div className="mb-8">
-                <Image
+                <CmsMedia
                   src={firstSection.logo}
                   alt="PNE Homes Logo"
                   width={100}
@@ -361,8 +365,9 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                 <Link href="/communities" className="group block">
                   <div className="relative h-64 overflow-hidden rounded-xl bg-gray-100">
                     {isLoaded && gridSection.links[0].cover && (
-                      <Image
+                      <CmsMedia
                         src={gridSection.links[0].cover}
+                        mediaType={gridSection.links[0].cover_type}
                         alt={gridSection.links[0].title}
                         fill
                         className="object-cover object-center"
@@ -407,8 +412,9 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                 <Link href="/gallery/kitchens" className="group block">
                   <div className="relative h-64 overflow-hidden rounded-xl bg-gray-100">
                     {isLoaded && gridSection.links[2].cover && (
-                      <Image
+                      <CmsMedia
                         src={gridSection.links[2].cover}
+                        mediaType={gridSection.links[2].cover_type}
                         alt={gridSection.links[2].title}
                         fill
                         className="object-cover object-center"
@@ -447,8 +453,9 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                 <Link href="/events" className="group block">
                   <div className="relative h-64 overflow-hidden rounded-xl bg-gray-100">
                     {isLoaded && gridSection.links[1].cover && (
-                      <Image
+                      <CmsMedia
                         src={gridSection.links[1].cover}
+                        mediaType={gridSection.links[1].cover_type}
                         alt={gridSection.links[1].title}
                         fill
                         className="object-cover object-center"
@@ -500,8 +507,9 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                 <Link href="/services/custom-homes" className="group block">
                   <div className="relative h-64 overflow-hidden rounded-xl bg-gray-100">
                     {isLoaded && gridSection.links[3].cover && (
-                      <Image
+                      <CmsMedia
                         src={gridSection.links[3].cover}
+                        mediaType={gridSection.links[3].cover_type}
                         alt={gridSection.links[3].title}
                         fill
                         className="object-cover object-center"

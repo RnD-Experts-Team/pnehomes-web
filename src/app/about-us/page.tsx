@@ -1,5 +1,5 @@
 import { getAboutUsData } from '@/features/aboutUs/api'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic' // ✅ ensure this page is always rendered dynamically
@@ -30,8 +30,10 @@ export default async function AboutUsPage() {
         <section className="relative isolate h-[60vh] overflow-hidden">
           {/* Parallax background image container */}
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={coverImage}
+              mediaType={data.cover_type}
+              isCover
               alt="About Us Cover"
               fill
               className="object-cover object-center"

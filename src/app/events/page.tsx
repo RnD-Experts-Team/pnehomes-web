@@ -1,7 +1,7 @@
 import { EventsAPI } from '@/features/events/api'
 import type { Event } from '@/features/events/model/types'
 import ImageGallery from '@/components/ImageGallery'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 
 export default async function EventsPage() {
@@ -19,7 +19,7 @@ export default async function EventsPage() {
     )
   }
 
-  const { title, slogan, events, contact, cover } = eventsResponse.data
+  const { title, slogan, events, contact, cover, cover_type } = eventsResponse.data
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -28,8 +28,10 @@ export default async function EventsPage() {
         <section className="relative isolate overflow-hidden h-[60vh]">
           {/* Parallax background image container */}
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={cover}
+              mediaType={cover_type}
+              isCover
               alt="Events Hero"
               fill
               className="object-cover object-center"
@@ -83,7 +85,7 @@ export default async function EventsPage() {
                   {event.gallery && event.gallery.length > 0 && (
                     <div className={`p-6 md:p-8 ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
                       <ImageGallery 
-                        images={event.gallery} 
+                        images={event.gallery.map(g => typeof g === 'string' ? g : g.url)} 
                         title={event.title}
                         maxVisibleImages={4}
                       />

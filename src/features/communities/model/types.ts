@@ -1,8 +1,16 @@
+export type MediaType = 'image' | 'video' | null
+
+export interface GalleryItem {
+  url: string
+  type: MediaType
+}
+
 export interface FloorPlan {
   slug: string
   title: string
   community: string
   cover: string
+  cover_type: MediaType
   status?: string | null
   price: string
   beds: string
@@ -20,8 +28,10 @@ export interface Community {
   latitude: number
   longitude: number
   card_image: string
-  gallery: string[]
+  card_image_type: MediaType
+  gallery: GalleryItem[]
   video?: string | null
+  video_type: MediaType
   'community-features'?: string | null
   'floor-plans'?: FloorPlan[] | null
   'starting-price': string
@@ -50,6 +60,7 @@ export interface SearchFilters {
 export interface CommunitiesPageData {
   title: string
   cover: string
+  cover_type: MediaType
   zillowLink: string
   contact: {
     title?: string

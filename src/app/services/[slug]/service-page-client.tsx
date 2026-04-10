@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import { CmsMedia, type MediaType } from '@/components/CmsMedia'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,7 @@ interface ServicePageClientProps {
       sub_title: string
       description: string
       img: string
+      img_type?: MediaType
     }>
     contact: {
       title: string
@@ -21,9 +22,10 @@ interface ServicePageClientProps {
     }
   }
   coverImage: string | null
+  coverType?: MediaType
 }
 
-export default function ServicePageClient({ service, coverImage }: ServicePageClientProps) {
+export default function ServicePageClient({ service, coverImage, coverType }: ServicePageClientProps) {
   return (
     <div className="relative min-h-full">
       {/* Hero Section with Cover Image */}
@@ -31,8 +33,10 @@ export default function ServicePageClient({ service, coverImage }: ServicePageCl
         <section className="relative isolate overflow-hidden h-[60vh]">
           {/* Parallax background image container */}
           <div className="fixed inset-0 -z-10 bg-gray-100">
-            <Image
+            <CmsMedia
               src={coverImage}
+              mediaType={coverType}
+              isCover
               alt="Service Cover"
               fill
               className="object-cover object-center"
@@ -111,8 +115,9 @@ export default function ServicePageClient({ service, coverImage }: ServicePageCl
                       isEven ? '' : 'lg:col-start-2'
                     }`}
                   >
-                    <Image
+                    <CmsMedia
                       src={item.img}
+                      mediaType={item.img_type}
                       alt={item.sub_title}
                       fill
                       className="object-cover"

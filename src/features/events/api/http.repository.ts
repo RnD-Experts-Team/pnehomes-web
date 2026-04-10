@@ -1,4 +1,5 @@
 import { EventsData, EventsResponse, RawEventsResponse } from '../model/types'
+import { cmsUrl } from '@/lib/cms'
 
 /**
  * HTTP repository class for managing events data from the CMS API
@@ -10,12 +11,7 @@ export class HttpRepository {
   private readonly cacheMs: number
 
   constructor(opts?: { endpoint?: string; cacheMs?: number }) {
-    // Allow overriding via env or opts; default to the provided CMS URL
-    const envEndpoint =
-      process.env.NEXT_PUBLIC_EVENTS_API_URL ||
-      process.env.EVENTS_API_URL
-
-    this.endpoint = opts?.endpoint || envEndpoint || 'https://cms.pnehomes.com/api/events'
+    this.endpoint = opts?.endpoint || cmsUrl('/api/events')
     this.cacheMs = typeof opts?.cacheMs === 'number' ? opts!.cacheMs : 60_000 // 1 minute default
   }
 
@@ -57,6 +53,7 @@ export class HttpRepository {
 
     return {
       cover,
+      cover_type: (raw.data.cover_type as EventsData['cover_type']) ?? null,
       slogan,
       title,
       contact,

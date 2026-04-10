@@ -2,15 +2,17 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
+import type { MediaType } from '@/components/CmsMedia'
 
 interface HeroSectionProps {
   coverImage: string
+  coverImageType?: MediaType
   pageTitle: string
   subtitle?: string
 }
 
-export default function HeroSection({ coverImage, pageTitle, subtitle }: HeroSectionProps) {
+export default function HeroSection({ coverImage, coverImageType, pageTitle, subtitle }: HeroSectionProps) {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
@@ -22,13 +24,15 @@ export default function HeroSection({ coverImage, pageTitle, subtitle }: HeroSec
       {/* Parallax background image container - limited to hero section */}
       <div className="fixed inset-0 -z-10 bg-gray-100">
         {isLoaded && (
-          <Image
+          <CmsMedia
             src={coverImage}
+            mediaType={coverImageType}
             alt={pageTitle}
             fill
             className="object-cover object-center"
             priority
             sizes="100vw"
+            isCover
             style={{
               transform: 'translateZ(0)', // Force hardware acceleration
             }}

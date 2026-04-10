@@ -8,13 +8,9 @@ import type {
   OurTeamApiEnvelope,
   TeamMember,
 } from '../model/types'
+import { cmsUrl } from '@/lib/cms'
 
-// You can override this via env if you prefer.
-// Example (Vite): import.meta.env.VITE_CMS_BASE_URL
-// Example (Next.js): process.env.NEXT_PUBLIC_CMS_BASE_URL
-const CMS_BASE_URL = 'https://cms.pnehomes.com/api'
-
-const TEAM_ENDPOINT = `${CMS_BASE_URL.replace(/\/$/, '')}/team`
+const TEAM_ENDPOINT = cmsUrl('/api/team')
 
 /**
  * Transform raw API data into the stable OurTeamData shape used by the app.
@@ -26,6 +22,7 @@ function toOurTeamData(api: OurTeamApiData): OurTeamData {
     ? api.team.map(m => ({
         id: m.id,
         cover: m.cover ?? '',
+        cover_type: (m.cover_type as TeamMember['cover_type']) ?? null,
         name: m.name ?? '',
         position: m.position ?? '',
         description: m.description ?? '',
@@ -41,6 +38,7 @@ function toOurTeamData(api: OurTeamApiData): OurTeamData {
 
   return {
     cover: api.cover ?? '',
+    cover_type: (api.cover_type as OurTeamData['cover_type']) ?? null,
     slogan: api.slogan ?? '',
     title: api.title ?? '',
     subtitle: api.subtitle,
@@ -114,6 +112,7 @@ export class OurTeamRepository {
     const data = await this.getOurTeamData()
     return {
       cover: data.cover,
+      cover_type: data.cover_type,
       slogan: data.slogan,
       title: data.title,
       description: data.description,

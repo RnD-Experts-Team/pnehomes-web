@@ -1,24 +1,28 @@
-import Image from 'next/image'
+import { CmsMedia } from '@/components/CmsMedia'
+import type { MediaType } from '@/components/CmsMedia'
 
 interface HeroSectionProps {
   coverImage: string
+  coverImageType?: MediaType
   title: string
   subtitle?: string
 }
 
-export default function HeroSection({ coverImage, title, subtitle }: HeroSectionProps) {
+export default function HeroSection({ coverImage, coverImageType, title, subtitle }: HeroSectionProps) {
   return (
     <section className="relative isolate h-[60vh] overflow-hidden">
       {/* Fixed parallax background */}
       <div className="fixed inset-0 -z-20">
-        <Image
+        <CmsMedia
           src={coverImage}
+          mediaType={coverImageType}
           alt={`${title} hero background`}
           fill
           className="object-cover object-center"
           sizes="100vw"
           priority
           quality={85}
+          isCover
         />
       </div>
       

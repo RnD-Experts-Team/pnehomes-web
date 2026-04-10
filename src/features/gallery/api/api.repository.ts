@@ -2,16 +2,16 @@ import {
   GalleryData,
   GalleryAlbum,
   GalleryAlbums,
+  GalleryImage,
+  SubAlbum,
   GalleryFilterOptions,
   GallerySearchResult,
   ContactInfo,
 } from '../model/types'
 import { httpGetJson } from '../data/http'
+import { cmsUrl } from '@/lib/cms'
 
-// If you prefer env config, replace with process.env.NEXT_PUBLIC_CMS_BASE_URL, etc.
-const CMS_GALLERY_URL =
-  (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_CMS_GALLERY_URL) ||
-  'https://cms.pnehomes.com/api/gallery'
+const CMS_GALLERY_URL = cmsUrl('/api/gallery')
 
 type ApiEnvelope<T> = {
   success: boolean
@@ -21,13 +21,16 @@ type ApiEnvelope<T> = {
 // --- Raw CMS shapes (all fields optional/unknown) ---
 type RawImage = {
   virtual_img?: unknown
+  virtual_img_type?: unknown
   real_img?: unknown
+  real_img_type?: unknown
 }
 
 type RawSubAlbum = {
   slug?: unknown
   title?: unknown
   cover_img?: unknown
+  cover_img_type?: unknown
   gallery?: unknown
 }
 
@@ -36,6 +39,7 @@ type RawAlbum = {
   slug?: unknown
   title?: unknown
   cover_img?: unknown
+  cover_img_type?: unknown
   sub_albums?: unknown
   gallery?: unknown
 }
@@ -43,6 +47,7 @@ type RawAlbum = {
 type RawGalleryData = {
   title?: unknown
   cover?: unknown
+  cover_type?: unknown
   contact?: unknown
   gallery?: unknown
 }
@@ -71,6 +76,7 @@ async function fetchGalleryData(): Promise<GalleryData> {
     const normalized: GalleryData = {
       title: String(raw.title ?? ''),
       cover: String(raw.cover ?? ''),
+      cover_type: (raw.cover_type as GalleryData['cover_type']) ?? null,
       contact: raw.contact as ContactInfo,
       gallery: Array.isArray(raw.gallery)
         ? (raw.gallery as RawAlbum[]).map((album: RawAlbum) => ({
@@ -78,15 +84,19 @@ async function fetchGalleryData(): Promise<GalleryData> {
             slug: String(album.slug ?? ''),
             title: String(album.title ?? ''),
             cover_img: String(album.cover_img ?? ''),
+            cover_img_type: (album.cover_img_type as GalleryAlbum['cover_img_type']) ?? null,
             sub_albums: Array.isArray(album.sub_albums)
               ? (album.sub_albums as RawSubAlbum[]).map((sub: RawSubAlbum) => ({
                   slug: String(sub.slug ?? ''),
                   title: String(sub.title ?? ''),
                   cover_img: String(sub.cover_img ?? ''),
+                  cover_img_type: (sub.cover_img_type as SubAlbum['cover_img_type']) ?? null,
                   gallery: Array.isArray(sub.gallery)
                     ? (sub.gallery as RawImage[]).map((g: RawImage) => ({
                         virtual_img: String(g.virtual_img ?? ''),
+                        virtual_img_type: (g.virtual_img_type as GalleryImage['virtual_img_type']) ?? null,
                         real_img: String(g.real_img ?? ''),
+                        real_img_type: (g.real_img_type as GalleryImage['real_img_type']) ?? null,
                       }))
                     : [],
                 }))
@@ -94,7 +104,9 @@ async function fetchGalleryData(): Promise<GalleryData> {
             gallery: Array.isArray(album.gallery)
               ? (album.gallery as RawImage[]).map((g: RawImage) => ({
                   virtual_img: String(g.virtual_img ?? ''),
+                  virtual_img_type: (g.virtual_img_type as GalleryImage['virtual_img_type']) ?? null,
                   real_img: String(g.real_img ?? ''),
+                  real_img_type: (g.real_img_type as GalleryImage['real_img_type']) ?? null,
                 }))
               : [],
           }))

@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
+import { CmsMedia } from '@/components/CmsMedia'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { homeLayoutApi } from '@/features/home/api'
@@ -249,7 +249,7 @@ export function Header() {
               <div className="flex-shrink-0">
                 <Link href="/" aria-label="PNE Homes">
                   {logoSrc ? (
-                    <Image
+                    <CmsMedia
                       src={logoSrc}
                       alt="PNE Homes Logo"
                       width={320}
@@ -269,7 +269,7 @@ export function Header() {
             <div className="hidden flex-shrink-0 md:block">
               <Link href="/" aria-label="PNE Homes">
                 {logoSrc ? (
-                  <Image
+                  <CmsMedia
                     src={logoSrc}
                     alt="PNE Homes Logo"
                     width={320}

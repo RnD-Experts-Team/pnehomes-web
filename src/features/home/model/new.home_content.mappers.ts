@@ -10,6 +10,7 @@ import {
   Hero,
   Services,
   GridSection,
+  LinkItem,
   Testimonial,
 } from '../model/home_content.types'
 import { normalizeDriveImageUrl, normalizeDriveCoverImage, normalizeDriveVideoUrl } from './url.utils'
@@ -18,7 +19,9 @@ import { normalizeDriveImageUrl, normalizeDriveCoverImage, normalizeDriveVideoUr
 const mapFirstSection = (src: ApiHomeData['first_section']): FirstSection => ({
   video: '/vid/first.mp4', // Use local video file instead of API value
   'cover-for-mobile': normalizeDriveCoverImage(src.mobile_cover),
+  'cover-for-mobile-type': (src.mobile_cover_type as FirstSection['cover-for-mobile-type']) ?? null,
   logo: normalizeDriveImageUrl(src.logo),
+  logo_type: (src.logo_type as FirstSection['logo_type']) ?? null,
   title: src.title,
   subtitle: src.subtitle ?? null,
   'book-button': src.book_button_text ?? null,
@@ -28,6 +31,7 @@ const mapFirstSection = (src: ApiHomeData['first_section']): FirstSection => ({
 const mapServices = (src: ApiServicesDto): Services => ({
   title: src.title,
   cover: normalizeDriveCoverImage(src.cover),
+  cover_type: (src.cover_type as Services['cover_type']) ?? null,
   description: src.description ?? null,
   links: src.links.map(l => ({ title: l.title, slug: l.slug })),
 })
@@ -35,8 +39,10 @@ const mapServices = (src: ApiServicesDto): Services => ({
 
 const mapGrid = (src: ApiGrid): GridSection => ({
   video: src.video ?? '/vid/second.mp4', // Use local video file as fallback if API value is null/undefined
+  video_type: (src.video_type as GridSection['video_type']) ?? null,
   logo: normalizeDriveVideoUrl(src.logo),
-  links: src.links.map(l => ({ title: l.title, cover: normalizeDriveCoverImage(l.cover) })),
+  logo_type: (src.logo_type as GridSection['logo_type']) ?? null,
+  links: src.links.map(l => ({ title: l.title, cover: normalizeDriveCoverImage(l.cover), cover_type: (l.cover_type as LinkItem['cover_type']) ?? null })),
 })
 
 
