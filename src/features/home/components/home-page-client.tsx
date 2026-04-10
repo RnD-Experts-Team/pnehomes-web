@@ -183,6 +183,7 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
               <div className="mb-8">
                 <CmsMedia
                   src={firstSection.logo}
+                  mediaType={firstSection.logo_type}
                   alt="PNE Homes Logo"
                   width={100}
                   height={40}

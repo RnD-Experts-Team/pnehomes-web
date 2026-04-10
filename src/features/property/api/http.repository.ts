@@ -70,8 +70,11 @@ const ApiFactsFeature = z.object({
 
 const ApiFloorPlanLoose = z.object({
   title: z.string(),
-  img: z.union([z.string(), z.null()]).optional(), // allow null/missing
+  // CMS may send either `img` or `image`; accept both
+  img: z.union([z.string(), z.null()]).optional(),
+  image: z.union([z.string(), z.null()]).optional(),
   img_type: z.string().nullable().optional(),
+  image_type: z.string().nullable().optional(),
   Description: z.string().optional(),
   description: z.string().optional(),
 })
@@ -154,8 +157,8 @@ function normalizeFloorPlans(
   const plans = p.floor_plans ?? p.Floor_plans ?? []
   return plans.map(fp => ({
     title: fp.title,
-    img: fp.img ?? '', // handle null/missing
-    img_type: (fp.img_type as 'image' | 'video' | null) ?? null,
+    img: fp.image ?? fp.img ?? '', // CMS sends `image`; fall back to `img`
+    img_type: (fp.image_type ?? fp.img_type) as 'image' | 'video' | null ?? null,
     // normalize to capital-D `Description` to match your existing types
     Description: fp.Description ?? fp.description ?? '',
   }))

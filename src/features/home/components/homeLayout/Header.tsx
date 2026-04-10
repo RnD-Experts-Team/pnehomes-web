@@ -251,6 +251,7 @@ export function Header() {
                   {logoSrc ? (
                     <CmsMedia
                       src={logoSrc}
+                      mediaType="image"
                       alt="PNE Homes Logo"
                       width={320}
                       height={80}
@@ -271,6 +272,7 @@ export function Header() {
                 {logoSrc ? (
                   <CmsMedia
                     src={logoSrc}
+                    mediaType="image"
                     alt="PNE Homes Logo"
                     width={320}
                     height={80}

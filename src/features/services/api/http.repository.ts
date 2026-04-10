@@ -64,11 +64,24 @@ async function getServicesDataFresh(): Promise<ServicesData> {
     throw new Error('Malformed CMS response')
   }
 
-  // Normalize just in case (defensive)
+  // Normalize: CMS sends `image`/`image_type` in content items but our
+  // internal model uses `img`/`img_type`. Rename at the boundary.
+  const rawServices = Array.isArray(envelope.data.services)
+    ? (envelope.data.services as unknown as Record<string, unknown>[])
+    : []
   const data: ServicesData = {
     cover: envelope.data.cover,
     cover_type: envelope.data.cover_type ?? null,
-    services: Array.isArray(envelope.data.services) ? envelope.data.services : [],
+    services: rawServices.map((svc) => ({
+      ...svc,
+      content: Array.isArray(svc.content)
+        ? (svc.content as Record<string, unknown>[]).map((item) => ({
+            ...item,
+            img: (item.img as string) ?? (item.image as string) ?? '',
+            img_type: ((item.img_type ?? item.image_type) as MediaType) ?? null,
+          }))
+        : [],
+    })) as Services,
   }
 
   servicesCache = { data, expiresAt: Date.now() + CACHE_TTL_MS }

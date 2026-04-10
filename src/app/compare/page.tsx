@@ -17,6 +17,7 @@ function CompareContent() {
   const [properties, setProperties] = useState<PropertyType[]>([])
   const [loading, setLoading] = useState(true)
   const [coverImage, setCoverImage] = useState<string>('')
+  const [coverType, setCoverType] = useState<'image' | 'video' | null>(null)
 
   useEffect(() => {
     const propertyIds = searchParams.get('properties')
@@ -37,13 +38,15 @@ function CompareContent() {
     // Fetch properties by IDs and cover image
     const fetchData = async () => {
       try {
-        const [allProperties, cover] = await Promise.all([
+        const [allProperties, cover, covType] = await Promise.all([
           Property.list({ limit: 1000 }),
-          Property.getCoverImage()
+          Property.getCoverImage(),
+          Property.getCoverType()
         ])
         const selectedProperties = allProperties.filter(p => ids.includes(p.id))
         setProperties(selectedProperties)
         setCoverImage(cover)
+        setCoverType(covType)
       } catch (error) {
         console.error('Error fetching data:', error)
         router.push('/floor-plans')
@@ -70,6 +73,7 @@ function CompareContent() {
               alt="Compare Properties Cover"
               isCover
               fill
+              mediaType="image"
               className="object-cover object-center"
               priority
               sizes="100vw"
@@ -113,6 +117,7 @@ function CompareContent() {
               alt="Compare Properties Cover"
               isCover
               fill
+              mediaType={coverType}
               className="object-cover object-center"
               sizes="100vw"
             />
@@ -178,6 +183,7 @@ function CompareContent() {
             alt="Compare Properties Cover"
             isCover
             fill
+            mediaType={coverType}
             className="object-cover object-center"
             sizes="100vw"
           />
