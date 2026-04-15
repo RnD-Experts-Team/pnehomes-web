@@ -93,7 +93,58 @@ export default function ServicePageClient({ service, coverImage, coverType }: Se
           <div className="space-y-16">
             {service.content.map((item, index) => {
               const isEven = index % 2 === 0
+              const isVideo = item.img_type === 'video'
 
+              if (isVideo) {
+                // Video items: full-width stacked layout with 16:9 aspect ratio
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="mx-auto max-w-4xl space-y-6"
+                  >
+                    {/* Video player — 16:9 */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.97 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      transition={{ duration: 0.6, delay: index * 0.1 + 0.2 }}
+                      className="relative w-full overflow-hidden rounded-2xl shadow-lg aspect-video bg-gray-100"
+                    >
+                      <CmsMedia
+                        src={item.img}
+                        mediaType={item.img_type}
+                        alt={item.sub_title}
+                        fill
+                        className="object-cover"
+                        sizes="(min-width: 1024px) 75vw, 100vw"
+                        videoProps={{ autoPlay: false, muted: true, loop: false, playsInline: true }}
+                      />
+                    </motion.div>
+
+                    {/* Text below the video */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      transition={{ duration: 0.6, delay: index * 0.1 + 0.3 }}
+                      className="space-y-3 text-center"
+                    >
+                      <h3 className="text-foreground text-2xl font-bold md:text-3xl">
+                        {item.sub_title}
+                      </h3>
+                      <p className="text-muted-foreground text-lg leading-relaxed">
+                        {item.description}
+                      </p>
+                    </motion.div>
+                  </motion.div>
+                )
+              }
+
+              // Image items: alternating side-by-side layout
               return (
                 <motion.div
                   key={index}

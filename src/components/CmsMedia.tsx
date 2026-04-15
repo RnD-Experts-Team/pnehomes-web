@@ -46,23 +46,6 @@ function isDriveUrl(url: string): boolean {
   return /drive\.google\.com|lh3\.googleusercontent\.com/.test(url)
 }
 
-/** Play-button overlay shown on interactive Drive video thumbnails */
-function PlayOverlay({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      aria-label="Play video"
-      onClick={onClick}
-      className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/20 transition-colors hover:bg-black/30"
-    >
-      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-transform hover:scale-110">
-        <svg className="ml-1 h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M8 5v14l11-7z" />
-        </svg>
-      </span>
-    </button>
-  )
-}
 
 /**
  * Interactive Drive video player.
@@ -95,23 +78,38 @@ function DriveVideoPlayer(props: CmsMediaProps) {
     : normalizeDriveImageUrl(props.src)
   const imgSrc = thumbnailSrc || props.src || '/img/placeholder.jpg'
 
+  // Use a self-contained wrapper so the overlay always positions relative
+  // to THIS element, not whatever positioned ancestor happens to be outside.
+  const wrapperClass = props.fill
+    ? `absolute inset-0 ${props.className ?? ''}`
+    : `relative w-full h-full ${props.className ?? ''}`
+
   return (
-    <>
+    <div className={wrapperClass} style={props.style}>
       <Image
         src={imgSrc}
         alt={props.alt}
-        fill={props.fill}
-        className={props.className}
+        fill
+        className="object-cover"
         sizes={props.sizes}
         priority={props.priority}
         quality={props.quality}
-        width={!props.fill ? props.width : undefined}
-        height={!props.fill ? props.height : undefined}
         onError={props.onError}
-        style={props.style}
       />
-      <PlayOverlay onClick={() => setPlaying(true)} />
-    </>
+      {/* Play button — always on top inside this wrapper */}
+      <button
+        type="button"
+        aria-label="Play video"
+        onClick={() => setPlaying(true)}
+        className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/25 transition-colors hover:bg-black/35"
+      >
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black/70 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-110">
+          <svg className="ml-1 h-7 w-7" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+      </button>
+    </div>
   )
 }
 
