@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import Script from 'next/script'
 import './globals.css'
 import { Header } from '@/features/home/components/homeLayout/Header'
 import { Footer } from '@/features/home/components/homeLayout/Footer'
 import { ComparisonProvider } from '@/contexts/ComparisonContext'
 import ComparisonDrawer from '@/components/ComparisonDrawer'
 import ComparisonFloatingButton from '@/components/ComparisonFloatingButton'
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -33,23 +33,14 @@ export const metadata: Metadata = {
   manifest: '/favicon/site.webmanifest',
 }
 
+const GOOGLE_ADS_ID = 'AW-16793956604'
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-EWHZR0JMJQ'
+const ENABLE_ANALYTICS = process.env.NODE_ENV === 'production' && Boolean(GA_MEASUREMENT_ID)
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <head>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-16793956604"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-16793956604');
-          `}
-        </Script>
-      </head>
+      <head />
       <body
         className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col text-[color:var(--pne-text)] antialiased`}
         suppressHydrationWarning={true}
@@ -64,6 +55,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <ComparisonDrawer />
           <ComparisonFloatingButton />
         </ComparisonProvider>
+        {ENABLE_ANALYTICS ? (
+          <GoogleAnalytics gaMeasurementId={GA_MEASUREMENT_ID} googleAdsId={GOOGLE_ADS_ID} />
+        ) : null}
       </body>
     </html>
   )

@@ -18,6 +18,21 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Analytics Configuration
+
+Google Analytics is enabled in production only.
+
+Set this environment variable in your deployment platform and local env files:
+
+```bash
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-EWHZR0JMJQ
+```
+
+Notes:
+
+- The app keeps Google Ads tracking enabled via the existing Ads ID.
+- Page views are tracked on App Router navigation (client-side route changes).
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
