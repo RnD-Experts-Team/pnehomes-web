@@ -110,7 +110,9 @@ function ClusteredMarkers({
       return;
     }
 
-    const bounds = new google.maps.LatLngBounds();
+    const mapsApi = (globalThis as { google?: { maps?: { LatLngBounds: new () => { extend: (point: { lat: number; lng: number }) => void } } } }).google?.maps;
+    if (!mapsApi?.LatLngBounds) return;
+    const bounds = new mapsApi.LatLngBounds();
     points.forEach((c) => bounds.extend({ lat: c.latitude, lng: c.longitude }));
     map.fitBounds(bounds);
   }, [map, points]);

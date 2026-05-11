@@ -15,8 +15,8 @@ import {
   type SitemapUrl,
 } from '@/lib/sitemap'
 
-// Cache the sitemap for 1 hour to improve performance
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 // Force refresh trigger
 export async function GET() {
