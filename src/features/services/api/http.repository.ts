@@ -21,6 +21,7 @@ async function httpGetJSON<T>(url: string, timeoutMs = 10000): Promise<T> {
     const res = await fetch(url, {
       method: 'GET',
       headers: { Accept: 'application/json' },
+      cache: 'no-store',
       signal: controller.signal,
     })
     if (!res.ok) {
@@ -46,10 +47,9 @@ async function httpGetJSON<T>(url: string, timeoutMs = 10000): Promise<T> {
 
 
 /**
- * Very small in-memory cache to avoid re-fetching the same blob repeatedly.
- * If you’d rather not cache, set CACHE_TTL_MS = 0.
+ * In-memory cache is disabled so CMS updates are always visible immediately.
  */
-const CACHE_TTL_MS = 60_000 // 1 minute
+const CACHE_TTL_MS = 0
 type CacheEntry = { data: ServicesData; expiresAt: number }
 let servicesCache: CacheEntry | null = null
 

@@ -134,7 +134,7 @@ export class GalleryApiRepository {
   // in-memory cache + TTL to avoid stale data
   private cache: GalleryData | null = null
   private cacheAtMs = 0
-  private readonly ttlMs = 60 * 1000 // ✅ 60 seconds TTL to match revalidate
+  private readonly ttlMs = 0
 
   private async ensureData(): Promise<GalleryData> {
     const now = Date.now()

@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata: Metadata = {
   title: 'PNE Homes - Quality Home Builders',
   description: 'Building quality homes with exceptional craftsmanship and attention to detail.',

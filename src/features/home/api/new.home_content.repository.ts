@@ -22,15 +22,11 @@ export class HomeContentRepository {
 
   /**
    * Fetch & map the complete home content.
-   * - Uses Next.js fetch cache by default; tweak `next`/`cache` as needed.
+   * - Caching disabled so CMS changes appear immediately.
    */
   public async getHomeContent(): Promise<HomeContent> {
     const res = await fetch(this.endpoint, {
-      // Option A: ISR-ish (e.g. revalidate every 5 mins)
-      next: { revalidate: 300 },
-
-      // Option B: always fresh (uncomment instead of `next`):
-      // cache: 'no-store',
+      cache: 'no-store',
     })
 
     if (!res.ok) throw new Error(`Failed to load home content: ${res.status}`)

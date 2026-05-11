@@ -24,7 +24,7 @@ type CmsCommunitiesPayload = {
 export class ApiRepository {
   private cache: CmsCommunitiesPayload | null = null
   private lastFetchedAt: number | null = null
-  private ttlMs = 60_000 // 1 minute cache; adjust as needed
+  private ttlMs = 0
 
   private async load(): Promise<CmsCommunitiesPayload> {
     const now = Date.now()

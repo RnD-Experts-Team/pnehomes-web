@@ -35,11 +35,7 @@ export async function httpGetJson<T>(url: string, options: RequestOptions = {}):
     const res = await fetch(url, {
       ...rest,
       signal: controller.signal,
-
-      // ✅ Option B:
-      // Leave fetch cache ON, but revalidate frequently.
-      // Removing "force-cache" fixes stale data lock-in.
-      next: { revalidate: 60 }, // ✅ refresh cache every 60s
+      cache: 'no-store',
     })
 
     console.log(`[httpGetJson] Response status: ${res.status}`)

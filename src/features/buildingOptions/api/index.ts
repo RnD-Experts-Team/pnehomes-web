@@ -5,7 +5,7 @@ import { cmsUrl } from '@/lib/cms'
 
 const BASE_URL = cmsUrl('/api')
 const PATH = process.env.CMS_BUILDING_OPTIONS_PATH ?? '/building-options'
-const TTL_MS = process.env.CMS_CACHE_TTL_MS ? Number(process.env.CMS_CACHE_TTL_MS) : 10 * 60 * 1000
+const TTL_MS = process.env.CMS_CACHE_TTL_MS ? Number(process.env.CMS_CACHE_TTL_MS) : 0
 
 // Create a singleton instance of the repository (API-backed)
 const buildingOptionsRepository = new BuildingOptionsApiRepository(BASE_URL, PATH, TTL_MS)

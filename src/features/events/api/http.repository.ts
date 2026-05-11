@@ -12,7 +12,7 @@ export class HttpRepository {
 
   constructor(opts?: { endpoint?: string; cacheMs?: number }) {
     this.endpoint = opts?.endpoint || cmsUrl('/api/events')
-    this.cacheMs = typeof opts?.cacheMs === 'number' ? opts!.cacheMs : 60_000 // 1 minute default
+    this.cacheMs = typeof opts?.cacheMs === 'number' ? opts!.cacheMs : 0
   }
 
   /**
@@ -26,6 +26,7 @@ export class HttpRepository {
       const res = await fetch(url, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
+        cache: 'no-store',
         signal: controller.signal,
         ...init,
       })

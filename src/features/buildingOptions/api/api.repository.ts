@@ -52,8 +52,8 @@ export class BuildingOptionsApiRepository {
   constructor(
     baseUrl = cmsUrl('/api'),
     path = '/building-options',
-    // optional TTL to refresh cache periodically if desired (default: 10 minutes)
-    ttlMs = 10 * 60 * 1000
+    // default disabled to keep CMS content always fresh
+    ttlMs = 0
   ) {
     this.endpoint = `${baseUrl.replace(/\/$/, '')}${path}`
     this.ttlMs = ttlMs
@@ -71,6 +71,7 @@ export class BuildingOptionsApiRepository {
     const res = await fetch(this.endpoint, {
       method: 'GET',
       headers: { 'Accept': 'application/json' },
+      cache: 'no-store',
     })
 
     if (!res.ok) {
