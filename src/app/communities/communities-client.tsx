@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/select'
 import { communitiesAPI, Community, CommunitiesPageData } from '@/features/communities/api'
 import { Button } from '@/components/ui/button'
+import BrandLoader from '@/components/BrandLoader'
 import dynamic from 'next/dynamic'
 const CommunityMap = dynamic(() => import('@/features/communities/components/CommunityMap'), {
   ssr: false,
@@ -69,11 +70,7 @@ export default function CommunitiesPageClient({ subtitle }: CommunitiesPageProps
   const uniqueCities = Array.from(new Set(communities.map(c => c.city)))
 
   if (loading) {
-    return (
-      <div className="container mx-auto max-w-6xl px-4 py-8">
-        <div className="text-center">Loading communities...</div>
-      </div>
-    )
+    return <BrandLoader label="Loading communities" />
   }
 
   return (

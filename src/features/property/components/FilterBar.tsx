@@ -1,8 +1,6 @@
 'use client'
 // src/features/property/components/FilterBar.tsx
 
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -12,98 +10,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { getCommunities } from '@/features/property/api'
 
-export default function FilterBar() {
-  const router = useRouter()
-  const sp = useSearchParams()
+/**
+ * Controlled filter values. Empty string / "all" / "any" mean "no filter".
+ */
+export type FilterValues = {
+  community: string
+  price: string
+  beds: string
+  baths: string
+  garages: string
+}
 
-  // NOTE: use "all"/"any" for UI, but convert to/from empty strings for URL params
-  const [community, setCommunity] = useState(sp.get('community') || 'all')
-  const [price, setPrice] = useState(sp.get('price') ?? '')
-  const [beds, setBeds] = useState(sp.get('beds') || 'any')
-  const [baths, setBaths] = useState(sp.get('baths') || 'any')
-  const [garages, setGarages] = useState(sp.get('garages') || 'any')
-  const [communities, setCommunities] = useState<string[]>([])
+export const EMPTY_FILTERS: FilterValues = {
+  community: 'all',
+  price: '',
+  beds: 'any',
+  baths: 'any',
+  garages: 'any',
+}
 
-  // Keep inputs in sync with URL changes
-  useEffect(() => {
-    setCommunity(sp.get('community') || 'all')
-    setPrice(sp.get('price') ?? '')
-    setBeds(sp.get('beds') || 'any')
-    setBaths(sp.get('baths') || 'any')
-    setGarages(sp.get('garages') || 'any')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sp.toString()])
+type FilterBarProps = {
+  values: FilterValues
+  communities: string[]
+  onChange: (next: FilterValues) => void
+  onReset: () => void
+}
 
-  // Load communities from the API-backed repository
-  useEffect(() => {
-    getCommunities().then(setCommunities).catch(() => setCommunities([]))
-  }, [])
-
-  const searchParamsString = useMemo(() => sp.toString(), [sp])
-
-  function apply() {
-    const params = new URLSearchParams(searchParamsString)
-
-    // COMMUNITY
-    const trimmedCommunity = community.trim()
-    if (trimmedCommunity && trimmedCommunity !== 'all') {
-      params.set('community', trimmedCommunity)
-    } else {
-      params.delete('community')
-    }
-
-    // PRICE (API expects ?price= as "max price")
-    const numericPrice = price.trim()
-    if (numericPrice && !isNaN(Number(numericPrice)) && Number(numericPrice) > 0) {
-      params.set('price', numericPrice)
-    } else {
-      params.delete('price')
-    }
-
-    // BEDS
-    if (beds && beds !== 'any' && !isNaN(Number(beds))) {
-      params.set('beds', beds)
-    } else {
-      params.delete('beds')
-    }
-
-    // BATHS (can be fractional like 2.5)
-    if (baths && baths !== 'any' && !isNaN(Number(baths))) {
-      params.set('baths', baths)
-    } else {
-      params.delete('baths')
-    }
-
-    // GARAGES
-    if (garages && garages !== 'any' && !isNaN(Number(garages))) {
-      params.set('garages', garages)
-    } else {
-      params.delete('garages')
-    }
-
-    // When applying new filters, reset to page 1
-    params.set('page', '1')
-
-    router.push(`/floor-plans?${params.toString()}`)
-  }
-
-  function reset() {
-    router.push(`/floor-plans`)
-  }
-
-  // Submit on Enter in the price field
-  function onPriceKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') apply()
-  }
+/**
+ * Presentational filter bar. It owns no data — the parent (`FloorPlansExplorer`)
+ * holds the values in state and filters the in-memory dataset instantly, so
+ * changing a control never triggers a navigation or a CMS round-trip.
+ */
+export default function FilterBar({ values, communities, onChange, onReset }: FilterBarProps) {
+  const set = (patch: Partial<FilterValues>) => onChange({ ...values, ...patch })
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
-      {/* Filter controls */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
         {/* Community */}
-        <Select value={community} onValueChange={setCommunity}>
+        <Select value={values.community} onValueChange={(v) => set({ community: v })}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Community name" />
           </SelectTrigger>
@@ -121,16 +67,15 @@ export default function FilterBar() {
         <Input
           type="number"
           placeholder="Max price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          onKeyDown={onPriceKeyDown}
+          value={values.price}
+          onChange={(e) => set({ price: e.target.value })}
           className="w-full"
           min="0"
           inputMode="numeric"
         />
 
         {/* Beds */}
-        <Select value={beds} onValueChange={setBeds}>
+        <Select value={values.beds} onValueChange={(v) => set({ beds: v })}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Any beds" />
           </SelectTrigger>
@@ -143,7 +88,7 @@ export default function FilterBar() {
         </Select>
 
         {/* Baths */}
-        <Select value={baths} onValueChange={setBaths}>
+        <Select value={values.baths} onValueChange={(v) => set({ baths: v })}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Any baths" />
           </SelectTrigger>
@@ -156,7 +101,7 @@ export default function FilterBar() {
         </Select>
 
         {/* Garages */}
-        <Select value={garages} onValueChange={setGarages}>
+        <Select value={values.garages} onValueChange={(v) => set({ garages: v })}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Any garages" />
           </SelectTrigger>
@@ -170,12 +115,9 @@ export default function FilterBar() {
 
         {/* Actions */}
         <div className="col-span-1 flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:gap-3 lg:col-span-3 xl:col-span-1">
-          <Button onClick={apply} className="flex-1 sm:min-w-[80px] sm:flex-none">
-            Apply
-          </Button>
           <Button
             variant="outline"
-            onClick={reset}
+            onClick={onReset}
             className="flex-1 sm:min-w-[80px] sm:flex-none"
           >
             Reset

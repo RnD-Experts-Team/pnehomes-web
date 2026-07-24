@@ -58,10 +58,13 @@ const routeForIndex = (index: number, label: string) => {
   }
 }
 
-export function Footer() {
-  const [footerConfig, setFooterConfig] = useState<FooterConfig | null>(null)
+export function Footer({ initialConfig = null }: { initialConfig?: FooterConfig | null }) {
+  const [footerConfig, setFooterConfig] = useState<FooterConfig | null>(initialConfig)
 
+  // Config is normally provided by the server (see layout.tsx). Only fetch on
+  // the client as a fallback if the server didn't supply it (e.g. CMS error).
   useEffect(() => {
+    if (initialConfig) return
     let mounted = true
     ;(async () => {
       try {
@@ -74,7 +77,7 @@ export function Footer() {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [initialConfig])
 
   const nav = footerConfig?.navigation?.slice(0, 4) ?? []
   const phone = footerConfig?.phone ?? null

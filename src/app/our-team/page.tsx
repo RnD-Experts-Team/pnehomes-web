@@ -2,7 +2,7 @@ import { getOurTeamData, TeamMember } from '@/features/ourTeam/api'
 import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic' // ✅ always dynamic rendering (no stale server cache)
+export const revalidate = 60 // ISR: cached, refreshed in the background
 
 export default async function OurTeamPage() {
   const teamData = await getOurTeamData()

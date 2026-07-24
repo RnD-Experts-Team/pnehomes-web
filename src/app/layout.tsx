@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/features/home/components/homeLayout/Header'
 import { Footer } from '@/features/home/components/homeLayout/Footer'
+import { homeLayoutApi } from '@/features/home/api'
 import { ComparisonProvider } from '@/contexts/ComparisonContext'
 import ComparisonDrawer from '@/components/ComparisonDrawer'
 import ComparisonFloatingButton from '@/components/ComparisonFloatingButton'
@@ -17,8 +19,9 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// ISR: pages are cached and revalidated in the background (see src/lib/cms.ts).
+// Individual routes may override this with their own `revalidate`.
+export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'PNE Homes - Quality Home Builders',
@@ -40,7 +43,21 @@ const GOOGLE_ADS_ID = 'AW-16793956604'
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-EWHZR0JMJQ'
 const ENABLE_ANALYTICS = process.env.NODE_ENV === 'production' && Boolean(GA_MEASUREMENT_ID)
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // Fetch layout config on the server (cached + deduped via cmsFetch) so the
+  // header/footer render with real data in the initial HTML — no client fetch,
+  // no skeleton flash on every navigation. Falls back to client fetch on error.
+  let headerConfig = null
+  let footerConfig = null
+  try {
+    ;[headerConfig, footerConfig] = await Promise.all([
+      homeLayoutApi.getHeader(),
+      homeLayoutApi.getFooter(),
+    ])
+  } catch (e) {
+    console.error('Failed to load layout config', e)
+  }
+
   return (
     <html lang="en" className="scroll-smooth">
       <head />
@@ -50,16 +67,18 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       >
         <ComparisonProvider>
           {/* Fixed, transparent header positioned above main content */}
-          <Header />
+          <Header initialConfig={headerConfig} />
           <main className="relative flex-1">{children}</main>
           <div className="relative z-30">
-            <Footer />
+            <Footer initialConfig={footerConfig} />
           </div>
           <ComparisonDrawer />
           <ComparisonFloatingButton />
         </ComparisonProvider>
         {ENABLE_ANALYTICS ? (
-          <GoogleAnalytics gaMeasurementId={GA_MEASUREMENT_ID} googleAdsId={GOOGLE_ADS_ID} />
+          <Suspense fallback={null}>
+            <GoogleAnalytics gaMeasurementId={GA_MEASUREMENT_ID} googleAdsId={GOOGLE_ADS_ID} />
+          </Suspense>
         ) : null}
       </body>
     </html>

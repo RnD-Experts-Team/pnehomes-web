@@ -9,8 +9,7 @@ interface SubAlbumPageProps {
   params: Promise<{ slug: string; subSlug: string }>
 }
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 60 // ✅ refresh route cache every 60s
+export const revalidate = 60 // ISR: refresh route cache every 60s
 
 export default async function SubAlbumPage({ params }: SubAlbumPageProps) {
   try {

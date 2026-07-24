@@ -26,7 +26,7 @@ export class HttpRepository {
       const res = await fetch(url, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
-        cache: 'no-store',
+        next: { revalidate: 60 },
         signal: controller.signal,
         ...init,
       })

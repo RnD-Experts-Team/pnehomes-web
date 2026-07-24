@@ -35,7 +35,7 @@ export async function httpGetJson<T>(url: string, options: RequestOptions = {}):
     const res = await fetch(url, {
       ...rest,
       signal: controller.signal,
-      cache: 'no-store',
+      next: { revalidate: 60 },
     })
 
     console.log(`[httpGetJson] Response status: ${res.status}`)

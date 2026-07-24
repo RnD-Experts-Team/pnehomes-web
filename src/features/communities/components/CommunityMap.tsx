@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import Link from "next/link";
 import {
   APIProvider,
   Map,
@@ -110,9 +111,8 @@ function ClusteredMarkers({
       return;
     }
 
-    const mapsApi = (globalThis as { google?: { maps?: { LatLngBounds: new () => { extend: (point: { lat: number; lng: number }) => void } } } }).google?.maps;
-    if (!mapsApi?.LatLngBounds) return;
-    const bounds = new mapsApi.LatLngBounds();
+    if (typeof google === "undefined" || !google.maps?.LatLngBounds) return;
+    const bounds = new google.maps.LatLngBounds();
     points.forEach((c) => bounds.extend({ lat: c.latitude, lng: c.longitude }));
     map.fitBounds(bounds);
   }, [map, points]);
@@ -155,12 +155,12 @@ function ClusteredMarkers({
                   {Number(String(c["starting-price"]).replace(/[^0-9.]/g, "")).toLocaleString()}
                 </div>
               )}
-              <a
+              <Link
                 href={`/communities/${c.slug}`}
                 className="mt-2 inline-block text-blue-600 hover:underline"
               >
                 View community →
-              </a>
+              </Link>
             </div>
           </InfoWindow>
         ) : null

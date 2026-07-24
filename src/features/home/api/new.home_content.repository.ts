@@ -1,7 +1,8 @@
+import { cache } from 'react'
 import { HomeContent } from '../model/home_content.types'
 import { ApiHomeResponse } from '../model/new.home_content.api.types'
 import { mapApiToHomeContent } from '../model/new.home_content.mappers'
-import { cmsUrl } from '@/lib/cms'
+import { cmsUrl, cmsFetch } from '@/lib/cms'
 
 /**
  * Server-friendly repository that pulls from the CMS.
@@ -22,12 +23,11 @@ export class HomeContentRepository {
 
   /**
    * Fetch & map the complete home content.
-   * - Caching disabled so CMS changes appear immediately.
+   * - ISR-cached via cmsFetch; wrapped in React `cache()` so the ~20 convenience
+   *   getters below share a single fetch per request instead of re-fetching.
    */
-  public async getHomeContent(): Promise<HomeContent> {
-    const res = await fetch(this.endpoint, {
-      cache: 'no-store',
-    })
+  public getHomeContent = cache(async (): Promise<HomeContent> => {
+    const res = await cmsFetch(this.endpoint)
 
     if (!res.ok) throw new Error(`Failed to load home content: ${res.status}`)
 
@@ -37,7 +37,7 @@ export class HomeContentRepository {
     }
 
     return mapApiToHomeContent(json.data)
-  }
+  })
 
   // Convenience getters that work off of getHomeContent()
   public async getFirstSection() {

@@ -6,10 +6,11 @@
  * previous file-based repository so the rest of your app doesn't need to change.
  */
 
+import { cache } from 'react'
 import { z } from 'zod'
 import type { Property, Contact } from '../model/types'
 import type { ListParams } from '../model/selectors'
-import { cmsUrl } from '@/lib/cms'
+import { cmsUrl, cmsFetchJson } from '@/lib/cms'
 
 const PROPERTIES_API = cmsUrl('/api/properties')
 
@@ -38,14 +39,9 @@ function buildQuery(params: ListParams = {}): string {
   return qp.toString()
 }
 
-/** Simple safe fetch wrapper (no-store so filters/sorting reflect latest). */
+/** Cached, time-bounded fetch (ISR). Deduped per-request by React `cache()` below. */
 async function getJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' })
-  if (!res.ok) {
-    const body = await res.text().catch(() => '')
-    throw new Error(`HTTP ${res.status} for ${url}: ${body}`)
-  }
-  return (await res.json()) as T
+  return cmsFetchJson<T>(url)
 }
 
 /* -------------------------------------------------------
@@ -217,6 +213,46 @@ export async function list(params: ListParams = {}): Promise<Property[]> {
   )
   return envelope.data.properties.map(normalizeProperty)
 }
+
+/**
+ * Floor-plans page payload in a SINGLE request.
+ *
+ * The CMS returns title/cover/cover_type/properties/communities all in one
+ * `/api/properties` response, so this replaces the previous N+1 (list +
+ * getTotalFilteredCount + getCoverImage + getCoverType + getPageTitle +
+ * getCommunities all hitting the same endpoint). Wrapped in React `cache()`
+ * so repeat calls within one render are deduped.
+ *
+ * `limit` defaults high enough to return the full (small) catalog so the client
+ * can filter/paginate in memory without further round-trips.
+ */
+export const getFloorPlansPageData = cache(async function getFloorPlansPageData(
+  limit = 1000
+): Promise<{
+  title: string
+  cover: string
+  cover_type: 'image' | 'video' | null
+  properties: Property[]
+  communities: string[]
+}> {
+  const env = ApiDataEnvelope.parse(
+    await getJson<ApiEnvelope>(`${PROPERTIES_API}?${buildQuery({ page: 1, limit })}`)
+  )
+  const properties = env.data.properties.map(normalizeProperty)
+  const communities =
+    env.data.filters?.communities?.length
+      ? [...env.data.filters.communities]
+      : Array.from(
+          new Set(properties.map(p => p.community?.trim()).filter((c): c is string => Boolean(c)))
+        )
+  return {
+    title: env.data.title ?? 'Floor Plans',
+    cover: env.data.cover ?? '',
+    cover_type: (env.data.cover_type as 'image' | 'video' | null) ?? null,
+    properties,
+    communities: communities.sort((a, b) => a.localeCompare(b)),
+  }
+})
 
 /**
  * Gets the total count of properties that match the given filter criteria

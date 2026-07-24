@@ -2,11 +2,13 @@
 
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { CmsMedia } from '@/components/CmsMedia'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { homeLayoutApi } from '@/features/home/api'
 import { ServicesSelect } from '@/features/services/components/ServicesSelect'
+import { MobileServicesAccordion } from '@/features/services/components/MobileServicesAccordion'
 import { Phone, Menu, X } from 'lucide-react'
 
 type HeaderConfig = {
@@ -133,18 +135,23 @@ const buildNavItems = (navigation: string[]): NavItem[] => {
   return [...linkItems, services]
 }
 
-export function Header() {
-  const [headerConfig, setHeaderConfig] = useState<HeaderConfig | null>(null)
+export function Header({ initialConfig = null }: { initialConfig?: HeaderConfig | null }) {
+  const [headerConfig, setHeaderConfig] = useState<HeaderConfig | null>(initialConfig)
   const [open, setOpen] = useState(false)
-  const [, setScrolled] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const pathname = usePathname()
   const headerRef = useRef<HTMLElement>(null)
 
   // Remember scrollY when menu opens to avoid closing from tiny layout jitters
   const openStartY = useRef(0)
+  // Track last scroll position to derive scroll direction
+  const lastScrollY = useRef(0)
 
-  // Load header config from API (async)
+  // Config is normally provided by the server (see layout.tsx). Only fetch on
+  // the client as a fallback if the server didn't supply it (e.g. CMS error).
   useEffect(() => {
+    if (initialConfig) return
     let mounted = true
     ;(async () => {
       try {
@@ -157,18 +164,35 @@ export function Header() {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [initialConfig])
 
   // Capture starting scroll position when opening
   useEffect(() => {
     if (open) openStartY.current = window.scrollY
   }, [open])
 
-  // Close only on meaningful scroll; also keep "scrolled" visual state
+  // Lock background scroll while the mobile drawer is open
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open])
+
+  // Scroll-aware header: solid background once scrolled, hide on scroll-down /
+  // reveal on scroll-up, and close the drawer on meaningful scroll.
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY
       setScrolled(y > 6)
+
+      // Hide when scrolling down past a threshold; always reveal when scrolling
+      // up. Never hide while the mobile drawer is open.
+      const goingDown = y > lastScrollY.current
+      setHidden(!open && goingDown && y > 80)
+      lastScrollY.current = y
 
       // Only close if user actually moved ~30px since opening
       if (open && Math.abs(y - openStartY.current) > 30) {
@@ -216,19 +240,15 @@ export function Header() {
 
   return (
     <>
-      {/* Mobile overlay to enable outside-click close */}
-      <button
-        type="button"
-        aria-hidden="true"
-        className={`fixed inset-0 z-40 transition-opacity md:hidden ${
-          open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-        onClick={() => setOpen(false)}
-      />
-
       <header
         ref={headerRef}
-        className="absolute top-0 right-0 left-0 z-50 bg-transparent"
+        className={`fixed top-0 right-0 left-0 z-50 transition-[transform,background-color,box-shadow,backdrop-filter] duration-300 ease-out ${
+          hidden ? '-translate-y-full' : 'translate-y-0'
+        } ${
+          scrolled
+            ? 'bg-[color:var(--pne-brand)]/95 shadow-lg backdrop-blur-md'
+            : 'bg-gradient-to-b from-[color:var(--pne-brand)]/70 via-[color:var(--pne-brand)]/30 to-transparent'
+        }`}
         aria-label="Site Header"
       >
         <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -334,40 +354,158 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Panel */}
-        <div
-          id="mobile-nav"
-          className={`overflow-hidden bg-white transition-[max-height] duration-300 ease-in-out md:hidden ${
-            open ? 'max-h-screen' : 'max-h-0'
-          }`}
-        >
-          <div className="space-y-3 px-4 py-4">
-            {navItems.map((item, index) => {
-              if (item.type === 'services') {
-                const activeServices = isActiveHref(pathname, '/services')
-                return (
-                  <div key={`m-services-${index}`} className="border-b border-gray-200 py-2 last:border-b-0">
-                    <ServicesSelect placeholder={item.label} active={activeServices} />
-                  </div>
-                )
-              }
-              const active = isActiveHref(pathname, item.href)
-              return (
-                <div key={item.href} className="border-b border-gray-200 py-2 last:border-b-0">
-                  <NavLink
-                    href={item.href}
-                    onClick={() => setOpen(false)} // close on link click
-                    isMobile={true}
-                    active={active}
-                  >
-                    {item.label}
-                  </NavLink>
-                </div>
-              )
-            })}
-          </div>
-        </div>
       </header>
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="mobile-nav"
+            className="fixed inset-0 z-[60] md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Backdrop */}
+            <motion.button
+              type="button"
+              aria-label="Close menu"
+              onClick={() => setOpen(false)}
+              className="absolute inset-0 cursor-default bg-[color:var(--pne-footer)]/70 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Panel */}
+            <motion.aside
+              className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col bg-white shadow-2xl"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+            >
+              {/* Panel header */}
+              <div className="flex items-center justify-between border-b border-[color:var(--pne-border)] px-5 py-4">
+                <Link href="/" aria-label="PNE Homes" onClick={() => setOpen(false)}>
+                  {logoSrc ? (
+                    <CmsMedia
+                      src={logoSrc}
+                      mediaType="image"
+                      alt="PNE Homes Logo"
+                      width={200}
+                      height={56}
+                      className="h-auto w-28 object-contain"
+                      sizes="7rem"
+                    />
+                  ) : (
+                    <span className="text-base font-bold tracking-widest text-[color:var(--pne-brand)]">
+                      PNE HOMES
+                    </span>
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  aria-label="Close menu"
+                  onClick={() => setOpen(false)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-[color:var(--pne-brand)] transition hover:bg-gray-100"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Nav items (staggered) */}
+              <motion.nav
+                className="flex-1 overflow-y-auto px-3 py-4"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: {},
+                  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.12 } },
+                }}
+              >
+                {navItems.map((item, index) => {
+                  const itemVariants = {
+                    hidden: { opacity: 0, x: 24 },
+                    visible: { opacity: 1, x: 0 },
+                  }
+
+                  if (item.type === 'services') {
+                    const activeServices = isActiveHref(pathname, '/services')
+                    return (
+                      <motion.div key={`m-services-${index}`} variants={itemVariants}>
+                        <MobileServicesAccordion
+                          label={item.label}
+                          active={activeServices}
+                          onNavigate={() => setOpen(false)}
+                        />
+                      </motion.div>
+                    )
+                  }
+
+                  const active = isActiveHref(pathname, item.href)
+                  return (
+                    <motion.div key={item.href} variants={itemVariants}>
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        className={`group flex items-center justify-between rounded-lg px-4 py-3.5 text-lg font-medium transition-all ${
+                          active
+                            ? 'bg-[color:var(--pne-accent)]/10 text-[color:var(--pne-accent)]'
+                            : 'text-[color:var(--pne-brand)] hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="flex items-center gap-3">
+                          <span
+                            className={`h-5 w-1 rounded-full transition-all ${
+                              active
+                                ? 'bg-[color:var(--pne-accent)]'
+                                : 'bg-transparent group-hover:bg-[color:var(--pne-accent)]/40'
+                            }`}
+                          />
+                          {item.label}
+                        </span>
+                        <span className="text-[color:var(--pne-muted)] opacity-0 transition-opacity group-hover:opacity-100">
+                          ›
+                        </span>
+                      </Link>
+                    </motion.div>
+                  )
+                })}
+              </motion.nav>
+
+              {/* CTA footer */}
+              <motion.div
+                className="space-y-3 border-t border-[color:var(--pne-border)] px-5 py-5"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                {headerConfig?.button && (
+                  <Button
+                    asChild
+                    className="w-full rounded-md bg-[color:var(--pne-accent)] py-6 text-base text-white shadow-sm transition hover:brightness-110"
+                  >
+                    <Link href="/contact" onClick={() => setOpen(false)}>
+                      {headerConfig.button}
+                    </Link>
+                  </Button>
+                )}
+                {headerConfig?.phone && (
+                  <a
+                    href={`tel:${headerConfig.phone}`}
+                    className="flex items-center justify-center gap-2 rounded-md border border-[color:var(--pne-border)] py-3 text-base font-medium text-[color:var(--pne-brand)] transition hover:bg-gray-50"
+                  >
+                    <Phone className="h-5 w-5" />
+                    {headerConfig.phone}
+                  </a>
+                )}
+              </motion.div>
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

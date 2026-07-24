@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ResponsiveMedia } from '@/features/home/components/ResponsiveMedia'
+import VideoLightbox from '@/components/VideoLightbox'
 import {
   normalizeDriveImageUrl,
   normalizeDriveCoverImage,
@@ -48,67 +49,75 @@ function isDriveUrl(url: string): boolean {
 
 
 /**
- * Interactive Drive video player.
- * Renders a thumbnail initially; clicking the play overlay swaps it for the
- * Drive iframe via ResponsiveMedia.
+ * Interactive video tile: a clean poster with a themed play button that opens
+ * the video in a centered modal (VideoLightbox).
+ *
+ * - Direct video (real .mp4): poster is the video's first frame, and the modal
+ *   plays it in a native <video> that AUTOPLAYS on open (one click, with sound).
+ * - Google Drive video: poster is Drive's thumbnail image, and the modal embeds
+ *   Drive's `/preview` iframe (Drive can't be auto-started — one click to play).
  */
-function DriveVideoPlayer(props: CmsMediaProps) {
-  const [playing, setPlaying] = useState(false)
-
-  if (playing) {
-    const videoSrc = normalizeDriveVideoUrl(props.src)
-    const videoClassName = props.fill
-      ? `absolute inset-0 h-full w-full ${props.className ?? ''}`
-      : props.className
-    return (
-      <ResponsiveMedia
-        src={videoSrc}
-        className={videoClassName}
-        style={props.style}
-        autoPlay
-        muted={props.videoProps?.muted ?? true}
-        loop={props.videoProps?.loop ?? false}
-        playsInline={props.videoProps?.playsInline ?? true}
-      />
-    )
-  }
+function InteractiveVideoTile(props: CmsMediaProps) {
+  const [open, setOpen] = useState(false)
+  const drive = isDriveUrl(props.src)
 
   const thumbnailSrc = props.isCover
     ? normalizeDriveCoverImage(props.src)
     : normalizeDriveImageUrl(props.src)
   const imgSrc = thumbnailSrc || props.src || '/img/placeholder.jpg'
 
-  // Use a self-contained wrapper so the overlay always positions relative
-  // to THIS element, not whatever positioned ancestor happens to be outside.
+  // Self-contained wrapper so the overlay positions relative to THIS element.
+  // Branded gradient background so the tile looks intentional while the poster
+  // loads (instead of a bare gray box).
   const wrapperClass = props.fill
-    ? `absolute inset-0 ${props.className ?? ''}`
-    : `relative w-full h-full ${props.className ?? ''}`
+    ? `absolute inset-0 bg-gradient-to-br from-[color:var(--pne-brand)] to-[color:var(--pne-footer)] ${props.className ?? ''}`
+    : `relative w-full h-full bg-gradient-to-br from-[color:var(--pne-brand)] to-[color:var(--pne-footer)] ${props.className ?? ''}`
 
   return (
     <div className={wrapperClass} style={props.style}>
-      <Image
-        src={imgSrc}
-        alt={props.alt}
-        fill
-        className="object-cover"
-        sizes={props.sizes}
-        priority={props.priority}
-        quality={props.quality}
-        onError={props.onError}
-      />
-      {/* Play button — always on top inside this wrapper */}
+      {drive ? (
+        <Image
+          src={imgSrc}
+          alt=""
+          fill
+          className="object-cover"
+          sizes={props.sizes}
+          priority={props.priority}
+          quality={props.quality}
+          onError={props.onError}
+        />
+      ) : (
+        // Direct video: show the first frame as the poster (muted, not playing).
+        <video
+          src={`${props.src}#t=0.1`}
+          muted
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
+
+      {/* Play button — opens the video in a clean modal */}
       <button
         type="button"
-        aria-label="Play video"
-        onClick={() => setPlaying(true)}
-        className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/25 transition-colors hover:bg-black/35"
+        aria-label={`Play video: ${props.alt}`}
+        onClick={() => setOpen(true)}
+        className="group/play absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/25 transition-colors hover:bg-black/35"
       >
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black/70 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-110">
-          <svg className="ml-1 h-7 w-7" fill="currentColor" viewBox="0 0 24 24">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--pne-accent)]/95 text-white shadow-lg backdrop-blur-sm transition-transform duration-200 group-hover/play:scale-110">
+          <svg className="ml-1 h-7 w-7" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M8 5v14l11-7z" />
           </svg>
         </span>
       </button>
+
+      <VideoLightbox
+        open={open}
+        onClose={() => setOpen(false)}
+        videoSrc={drive ? undefined : props.src}
+        iframeSrc={drive ? normalizeDriveVideoUrl(props.src) : undefined}
+        title={props.alt}
+      />
     </div>
   )
 }
@@ -135,7 +144,32 @@ export function CmsMedia({
   }
 
   if (mediaType === 'video') {
-    // ---------- Google Drive URLs ----------
+    // ---------- Interactive (click-to-play) ----------
+    // Poster + play button that opens the video in a clean modal. Works for
+    // both direct .mp4 (autoplays in the modal) and Drive (one click in the
+    // embedded player). Used by tiles/cards where the video isn't ambient.
+    if (videoProps?.autoPlay === false) {
+      return (
+        <InteractiveVideoTile
+          src={src}
+          mediaType={mediaType}
+          alt={alt}
+          fill={fill}
+          className={className}
+          sizes={sizes}
+          priority={priority}
+          quality={quality}
+          width={width}
+          height={height}
+          isCover={isCover}
+          videoProps={videoProps}
+          onError={onError}
+          style={style}
+        />
+      )
+    }
+
+    // ---------- Google Drive URLs (ambient / autoplay intent) ----------
     // Drive iframes cannot honour CSS object-fit and always show their own
     // player chrome (play button, scrubber, info bar).  For clean layout
     // fitting we render the Drive-generated thumbnail as an <Image> instead.
@@ -162,29 +196,6 @@ export function CmsMedia({
             muted={videoProps?.muted ?? true}
             loop={videoProps?.loop ?? true}
             playsInline={videoProps?.playsInline ?? true}
-          />
-        )
-      }
-
-      // Interactive context (autoPlay explicitly false) → show thumbnail
-      // with a play overlay; clicking it swaps in the iframe.
-      if (videoProps?.autoPlay === false) {
-        return (
-          <DriveVideoPlayer
-            src={src}
-            mediaType={mediaType}
-            alt={alt}
-            fill={fill}
-            className={className}
-            sizes={sizes}
-            priority={priority}
-            quality={quality}
-            width={width}
-            height={height}
-            isCover={isCover}
-            videoProps={videoProps}
-            onError={onError}
-            style={style}
           />
         )
       }

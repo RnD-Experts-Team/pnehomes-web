@@ -4,7 +4,6 @@
 
 import Link from 'next/link'
 import { CmsMedia } from '@/components/CmsMedia'
-import { useSearchParams } from 'next/navigation'
 import type { Property } from '../model/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -16,7 +15,6 @@ import { Bed, Bath, Car, Map } from 'lucide-react'
 export default function PropertyCard({ p }: { p: Property }) {
   const { addToComparison, removeFromComparison, isInComparison } = useComparison()
   const isSelected = isInComparison(p.id)
-  const searchParams = useSearchParams()
 
   const handleCompareClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -28,8 +26,11 @@ export default function PropertyCard({ p }: { p: Property }) {
     }
   }
 
-  // Build property URL with current filter parameters
-  const propertyUrl = `/property/${p.slug}?${searchParams.toString()}`
+  const propertyUrl = `/property/${p.slug}`
+
+  // CMS stores price as a string (often "-" when unpriced); only show a real number.
+  const priceNum = parseInt(p.price, 10)
+  const hasPrice = Number.isFinite(priceNum) && priceNum > 0
 
   const handleQuickReviewClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -68,7 +69,7 @@ export default function PropertyCard({ p }: { p: Property }) {
           <div className="text-xl font-bold hover:underline">{p.title}</div>
           <div className="mt-0.5 text-base capitalize opacity-60">{p.community}</div>
           <div className="mt-1.5 text-sm font-medium">
-            {p.price ? `$${parseInt(p.price).toLocaleString()}` : 'Contact for price'}
+            {hasPrice ? `$${priceNum.toLocaleString()}` : 'Contact for price'}
           </div>
           <div className="mt-1 flex items-center justify-around text-xs opacity-80">
             <div className="flex-col items-center justify-between">

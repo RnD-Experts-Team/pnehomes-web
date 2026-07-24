@@ -4,8 +4,7 @@ import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 import { getGlobalSubtitle } from '@/lib/global-subtitle'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 60 // ✅ refresh route cache every 60s
+export const revalidate = 60 // ISR: refresh route cache every 60s
 
 export default async function GalleryPage() {
   try {

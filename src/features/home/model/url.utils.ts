@@ -33,6 +33,34 @@ export function normalizeDriveImageUrl(url: string | null | undefined): string {
   }
 }
 
+/** Extract the Google Drive file id from any Drive/lh3 URL, or null. */
+export function driveFileId(url: string | null | undefined): string | null {
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    if (u.hostname === 'drive.google.com') {
+      return u.pathname.match(/\/file\/d\/([^/]+)/)?.[1] ?? u.searchParams.get('id')
+    }
+    if (u.hostname === 'lh3.googleusercontent.com') {
+      return u.pathname.match(/\/d\/([^/=?]+)/)?.[1] ?? null
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Direct, streamable video URL for a Drive-hosted file
+ * (`uc?export=view` serves the raw video/mp4), so it can be played in a native
+ * <video> element that autoplays — unlike the `/preview` iframe, which forces a
+ * manual click on Google's player.
+ */
+export function normalizeDriveDownloadUrl(url: string | null | undefined): string {
+  const id = driveFileId(url)
+  return id ? `https://drive.google.com/uc?export=view&id=${id}` : url ?? ''
+}
+
 /**
  * Normalizes Google Drive URLs for video files.
  * Returns the Drive /preview URL so ResponsiveMedia can render it via iframe.

@@ -405,10 +405,9 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                   mediaType={gridSection.video_type}
                   alt="Featured video"
                   fill
-                  forcePlay
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  videoProps={{ autoPlay: true, muted: true, loop: true, playsInline: true }}
+                  videoProps={{ autoPlay: false, muted: true, loop: true, playsInline: true }}
                 />
                 <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-black/5" />
               </motion.div>
@@ -497,12 +496,11 @@ export default function HomePageClient({ content }: { content: HomeContent }) {
                 <CmsMedia
                   src={gridSection.logo}
                   mediaType={gridSection.logo_type}
-                  alt="PNE Homes Logo"
+                  alt="PNE Homes"
                   fill
-                  forcePlay
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  videoProps={{ autoPlay: true, muted: true, loop: true, playsInline: true }}
+                  videoProps={{ autoPlay: false, muted: true, loop: true, playsInline: true }}
                 />
                 <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-black/5" />
               </motion.div>

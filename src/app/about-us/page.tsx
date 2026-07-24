@@ -2,7 +2,7 @@ import { getAboutUsData } from '@/features/aboutUs/api'
 import { CmsMedia } from '@/components/CmsMedia'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic' // ✅ ensure this page is always rendered dynamically
+export const revalidate = 60 // ISR: cached, refreshed in the background
 
 export default async function AboutUsPage() {
   const response = await getAboutUsData()

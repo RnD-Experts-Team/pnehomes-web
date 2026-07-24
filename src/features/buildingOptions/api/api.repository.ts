@@ -1,6 +1,6 @@
 // src/repositories/api.repository.ts
 import type { BuildingOptionsData, BuildingOption, Article, ArticlesSection } from '../model/types'
-import { cmsUrl } from '@/lib/cms'
+import { cmsUrl, cmsFetch } from '@/lib/cms'
 
 /**
  * Raw API response shapes
@@ -68,10 +68,8 @@ export class BuildingOptionsApiRepository {
       return this.cache
     }
 
-    const res = await fetch(this.endpoint, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-      cache: 'no-store',
+    const res = await cmsFetch(this.endpoint, {
+      init: { method: 'GET', headers: { Accept: 'application/json' } },
     })
 
     if (!res.ok) {

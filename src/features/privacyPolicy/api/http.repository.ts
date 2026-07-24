@@ -19,7 +19,7 @@ async function fetchJSON<T>(url: string, init?: RequestInit, timeoutMs = 8000): 
         Accept: 'application/json',
         ...(init?.headers || {}),
       },
-      cache: 'no-store',
+      next: { revalidate: 60 },
       signal: controller.signal,
       ...init,
     })

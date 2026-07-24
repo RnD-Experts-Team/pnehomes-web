@@ -8,11 +8,13 @@ import type {
   SocialMediaItem,
 } from '../model/types'
 
-import { cmsUrl } from '@/lib/cms'
+import { cmsUrl, cmsFetch } from '@/lib/cms'
 
 /**
  * Config:
  * Tiny in-memory cache with TTL to avoid hammering the CMS.
+ * NOTE: cross-request caching is now handled by Next's ISR (see cmsFetch);
+ * the in-memory TTL below is a redundant no-op kept for API parity.
  */
 
 const CMS_LAYOUT_URL = cmsUrl('/api/layout')
@@ -118,10 +120,8 @@ export class HomeLayoutRepository {
   // ===== internals =====
 
   private async fetchCmsLayout(): Promise<CmsLayoutData> {
-    const res = await fetch(CMS_LAYOUT_URL, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-      cache: 'no-store',
+    const res = await cmsFetch(CMS_LAYOUT_URL, {
+      init: { method: 'GET', headers: { Accept: 'application/json' } },
     })
 
     if (!res.ok) {

@@ -25,14 +25,11 @@ export async function getJson<T>(
       ...init,
       signal: controller.signal,
 
-      // ✅ Fix option A: always fetch fresh data (Next.js server fetch cache off)
-      cache: 'no-store',
+      // ISR: serve from cache, revalidate in the background.
+      next: { revalidate: 60 },
 
-      // Optional: helps with some proxies/CDNs that respect request headers
       headers: {
         Accept: 'application/json',
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
         ...(init.headers || {}),
       },
     })

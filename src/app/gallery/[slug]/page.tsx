@@ -10,8 +10,7 @@ interface AlbumPageProps {
   params: Promise<{ slug: string }>
 }
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 60 // ✅ refresh route cache every 60s
+export const revalidate = 60 // ISR: refresh route cache every 60s
 
 export default async function AlbumPage({ params }: AlbumPageProps) {
   try {

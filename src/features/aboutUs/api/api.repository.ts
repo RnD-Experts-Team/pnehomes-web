@@ -1,5 +1,5 @@
 import { AboutUsData, AboutUsResponse, ContactInfo } from '../model/types'
-import { cmsUrl } from '@/lib/cms'
+import { cmsUrl, cmsFetch } from '@/lib/cms'
 
 const API_URL = cmsUrl('/api/about-us')
 
@@ -14,14 +14,7 @@ export class AboutUsApiRepository {
    */
   static async getAboutUsData(): Promise<AboutUsResponse> {
     try {
-      const response = await fetch(API_URL, {
-        cache: 'no-store', // ✅ always fetch fresh data
-        // Optional: ensure no CDN/proxy cache issues if they respect request headers
-        headers: {
-          'Cache-Control': 'no-cache',
-          Pragma: 'no-cache',
-        },
-      })
+      const response = await cmsFetch(API_URL)
 
       const result = await response.json()
 

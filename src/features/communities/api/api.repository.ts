@@ -1,6 +1,6 @@
 // src/repository/api.repository.ts
 import { Community, CommunitiesPageData, MediaType } from '../model/types'
-import { cmsUrl } from '@/lib/cms'
+import { cmsUrl, cmsFetch } from '@/lib/cms'
 
 const API_URL = cmsUrl('/api/communities')
 
@@ -32,7 +32,7 @@ export class ApiRepository {
       return this.cache
     }
 
-    const res = await fetch(API_URL, { cache: 'no-store' })
+    const res = await cmsFetch(API_URL)
     if (!res.ok) {
       throw new Error(`Failed to fetch communities: ${res.status} ${res.statusText}`)
     }

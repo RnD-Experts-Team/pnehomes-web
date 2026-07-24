@@ -12,8 +12,8 @@ import { CircleDollarSignIcon, Bed, Bath, Car, Map } from 'lucide-react'
 import { FloorPlanCollapsible } from '@/features/property/components/FloorPlanCollapsible'
 import { replacePlaceholders } from '@/lib/utils'
 
-// Ensure this page always renders with fresh API data
-export const dynamic = 'force-dynamic'
+// ISR: pre-rendered per slug (generateStaticParams) and refreshed in the background.
+export const revalidate = 60
 
 export async function generateStaticParams() {
   const slugs = await Property.allSlugs()
