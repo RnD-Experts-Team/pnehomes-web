@@ -111,10 +111,18 @@ function ClusteredMarkers({
       return;
     }
 
-    if (typeof google === "undefined" || !google.maps?.LatLngBounds) return;
-    const bounds = new google.maps.LatLngBounds();
-    points.forEach((c) => bounds.extend({ lat: c.latitude, lng: c.longitude }));
-    map.fitBounds(bounds);
+    // Compute a LatLngBoundsLiteral ({north,south,east,west}) instead of using
+    // `new google.maps.LatLngBounds()`. This avoids referencing the `google`
+    // global, whose types are only a transitive dep and aren't visible under
+    // pnpm's isolated node_modules (the Vercel build) — which broke the build.
+    const lats = points.map((c) => c.latitude);
+    const lngs = points.map((c) => c.longitude);
+    map.fitBounds({
+      north: Math.max(...lats),
+      south: Math.min(...lats),
+      east: Math.max(...lngs),
+      west: Math.min(...lngs),
+    });
   }, [map, points]);
 
   // Close InfoWindow if its marker disappears after filtering
