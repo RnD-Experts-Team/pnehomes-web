@@ -91,6 +91,7 @@ export const STATIC_ROUTES: StaticRoute[] = [
   { url: '/events', priority: '0.8', changefreq: 'weekly' },
   { url: '/floor-plans', priority: '0.9', changefreq: 'daily' },
   { url: '/gallery', priority: '0.8', changefreq: 'weekly' },
+  { url: '/our-projects', priority: '0.8', changefreq: 'weekly' },
   { url: '/our-team', priority: '0.7', changefreq: 'monthly' },
   { url: '/privacy-policy', priority: '0.3', changefreq: 'yearly' },
   { url: '/services', priority: '0.8', changefreq: 'weekly' },

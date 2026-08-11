@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button'
 import { homeLayoutApi } from '@/features/home/api'
 import { ServicesSelect } from '@/features/services/components/ServicesSelect'
 import { MobileServicesAccordion } from '@/features/services/components/MobileServicesAccordion'
+import { GallerySelect } from '@/features/gallery/components/GallerySelect'
+import { MobileGalleryAccordion } from '@/features/gallery/components/MobileGalleryAccordion'
+import type { Service } from '@/features/services/model/types'
 import { Phone, Menu, X } from 'lucide-react'
 
 type HeaderConfig = {
@@ -54,6 +57,7 @@ const routeForIndex = (index: number, label: string) => {
 type NavItem =
   | { type: 'link'; label: string; href: string }
   | { type: 'services'; label: string }
+  | { type: 'gallery'; label: string }
 
 // Put near your helpers
 const KNOWN_LOCALES = ['en', 'bg', 'fr'] // adjust to your setup
@@ -118,11 +122,17 @@ const isActiveHref = (pathname: string, href: string) => {
  */
 const buildNavItems = (navigation: string[]): NavItem[] => {
   const visibleLinks = navigation.slice(0, 6)
-  const linkItems: NavItem[] = visibleLinks.map((label, i) => ({
-    type: 'link',
-    label,
-    href: routeForIndex(i, label),
-  }))
+  const linkItems: NavItem[] = visibleLinks.map((label, i) => {
+    // Index 2 (Gallery) is a dropdown: "Our Projects" + "Rooms" (see GallerySelect).
+    if (i === 2) {
+      return { type: 'gallery', label }
+    }
+    return {
+      type: 'link',
+      label,
+      href: routeForIndex(i, label),
+    }
+  })
 
   const services: NavItem = { type: 'services', label: 'Services' }
 
@@ -135,7 +145,13 @@ const buildNavItems = (navigation: string[]): NavItem[] => {
   return [...linkItems, services]
 }
 
-export function Header({ initialConfig = null }: { initialConfig?: HeaderConfig | null }) {
+export function Header({
+  initialConfig = null,
+  initialServices = [],
+}: {
+  initialConfig?: HeaderConfig | null
+  initialServices?: Service[]
+}) {
   const [headerConfig, setHeaderConfig] = useState<HeaderConfig | null>(initialConfig)
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -313,7 +329,20 @@ export function Header({ initialConfig = null }: { initialConfig?: HeaderConfig 
                   const activeServices = isActiveHref(pathname, '/services')
                   return (
                     <div key={`services-${index}`}>
-                      <ServicesSelect placeholder={item.label} active={activeServices} />
+                      <ServicesSelect
+                        placeholder={item.label}
+                        active={activeServices}
+                        services={initialServices}
+                      />
+                    </div>
+                  )
+                }
+                if (item.type === 'gallery') {
+                  const activeGallery =
+                    isActiveHref(pathname, '/gallery') || isActiveHref(pathname, '/our-projects')
+                  return (
+                    <div key={`gallery-${index}`}>
+                      <GallerySelect placeholder={item.label} active={activeGallery} />
                     </div>
                   )
                 }
@@ -438,6 +467,21 @@ export function Header({ initialConfig = null }: { initialConfig?: HeaderConfig 
                         <MobileServicesAccordion
                           label={item.label}
                           active={activeServices}
+                          services={initialServices}
+                          onNavigate={() => setOpen(false)}
+                        />
+                      </motion.div>
+                    )
+                  }
+
+                  if (item.type === 'gallery') {
+                    const activeGallery =
+                      isActiveHref(pathname, '/gallery') || isActiveHref(pathname, '/our-projects')
+                    return (
+                      <motion.div key={`m-gallery-${index}`} variants={itemVariants}>
+                        <MobileGalleryAccordion
+                          label={item.label}
+                          active={activeGallery}
                           onNavigate={() => setOpen(false)}
                         />
                       </motion.div>

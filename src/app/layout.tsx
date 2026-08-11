@@ -5,6 +5,8 @@ import './globals.css'
 import { Header } from '@/features/home/components/homeLayout/Header'
 import { Footer } from '@/features/home/components/homeLayout/Footer'
 import { homeLayoutApi } from '@/features/home/api'
+import { getAllServices } from '@/features/services/api'
+import type { Service } from '@/features/services/model/types'
 import { ComparisonProvider } from '@/contexts/ComparisonContext'
 import ComparisonDrawer from '@/components/ComparisonDrawer'
 import ComparisonFloatingButton from '@/components/ComparisonFloatingButton'
@@ -49,11 +51,16 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   // no skeleton flash on every navigation. Falls back to client fetch on error.
   let headerConfig = null
   let footerConfig = null
+  let services: Service[] = []
   try {
-    ;[headerConfig, footerConfig] = await Promise.all([
+    const [header, footer, servicesRes] = await Promise.all([
       homeLayoutApi.getHeader(),
       homeLayoutApi.getFooter(),
+      getAllServices(),
     ])
+    headerConfig = header
+    footerConfig = footer
+    services = servicesRes.success ? servicesRes.data : []
   } catch (e) {
     console.error('Failed to load layout config', e)
   }
@@ -67,7 +74,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       >
         <ComparisonProvider>
           {/* Fixed, transparent header positioned above main content */}
-          <Header initialConfig={headerConfig} />
+          <Header initialConfig={headerConfig} initialServices={services} />
           <main className="relative flex-1">{children}</main>
           <div className="relative z-30">
             <Footer initialConfig={footerConfig} />

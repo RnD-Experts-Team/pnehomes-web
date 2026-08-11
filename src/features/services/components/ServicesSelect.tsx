@@ -17,14 +17,27 @@ import type { Service } from '../model/types'
 interface ServicesSelectProps {
   placeholder?: string
   active?: boolean
+  /**
+   * Services fetched on the server (see layout.tsx). When provided, the
+   * dropdown renders them immediately — no client fetch, no CORS/timeout risk.
+   * The client fetch below only runs as a fallback if the server sent nothing.
+   */
+  services?: Service[]
 }
 
-export function ServicesSelect({ placeholder = 'Services', active = false }: ServicesSelectProps) {
+export function ServicesSelect({
+  placeholder = 'Services',
+  active = false,
+  services: initialServices = [],
+}: ServicesSelectProps) {
   const router = useRouter()
-  const [services, setServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
+  const [services, setServices] = useState<Service[]>(initialServices)
+  const [loading, setLoading] = useState(initialServices.length === 0)
 
   useEffect(() => {
+    // Server already supplied services — nothing to fetch.
+    if (initialServices.length > 0) return
+
     const loadServices = async () => {
       try {
         const response = await getAllServices()
@@ -39,7 +52,7 @@ export function ServicesSelect({ placeholder = 'Services', active = false }: Ser
     }
 
     loadServices()
-  }, [])
+  }, [initialServices])
 
   const handleServiceSelect = (slug: string) => {
     router.push(`/services/${slug}`)

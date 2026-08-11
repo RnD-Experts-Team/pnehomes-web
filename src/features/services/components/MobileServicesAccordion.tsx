@@ -17,16 +17,21 @@ import type { Service } from '../model/types'
 export function MobileServicesAccordion({
   label = 'Services',
   active = false,
+  services: initialServices = [],
   onNavigate,
 }: {
   label?: string
   active?: boolean
+  /** Server-supplied services (see layout.tsx); client fetch is a fallback. */
+  services?: Service[]
   onNavigate?: () => void
 }) {
-  const [services, setServices] = useState<Service[]>([])
+  const [services, setServices] = useState<Service[]>(initialServices)
   const [open, setOpen] = useState(active)
 
   useEffect(() => {
+    // Server already supplied services — nothing to fetch.
+    if (initialServices.length > 0) return
     let mounted = true
     getAllServices()
       .then(res => {
@@ -36,7 +41,7 @@ export function MobileServicesAccordion({
     return () => {
       mounted = false
     }
-  }, [])
+  }, [initialServices])
 
   return (
     <div>
