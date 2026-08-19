@@ -39,6 +39,10 @@ export const metadata: Metadata = {
   },
   // Reference PWA manifest that includes Android Chrome icons (192x192, 512x512)
   manifest: '/favicon/site.webmanifest',
+  // Pinterest domain verification (Pinterest Business account)
+  other: {
+    'p:domain_verify': 'd712782b7604a26ff6305ca5d5f2cc58',
+  },
 }
 
 const GOOGLE_ADS_ID = 'AW-16793956604'
