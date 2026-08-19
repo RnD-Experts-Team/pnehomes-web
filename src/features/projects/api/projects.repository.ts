@@ -8,7 +8,6 @@ import type {
 } from '@/features/gallery/model/types'
 import { httpGetJson } from '@/features/gallery/data/http'
 import { cmsUrl } from '@/lib/cms'
-import projectsMock from '../mock/projects.json'
 
 /**
  * "Our Projects" repository.
@@ -16,11 +15,6 @@ import projectsMock from '../mock/projects.json'
  * Uses the SAME data shape as the gallery (`GalleryData`) but semantically
  * inverted: each top-level album is a LOT (house), and its `sub_albums` are
  * ROOMS (Exterior, Kitchen, Bathroom, ...).
- *
- * Backend note: the CMS endpoint `/api/projects` does not exist yet. Until the
- * backend team ships it, this repository falls back to `mock/projects.json`
- * (the 9 lots). Once the endpoint is live and returns lots, real data wins and
- * the mock fallback can be removed.
  */
 const CMS_PROJECTS_URL = cmsUrl('/api/projects')
 
@@ -107,35 +101,14 @@ function normalize(raw: RawProjectsData): GalleryData {
   }
 }
 
-/** Load the bundled mock and normalize it. Used when the CMS is unavailable. */
-function loadMock(): GalleryData {
-  const envelope = projectsMock as unknown as ApiEnvelope<RawProjectsData>
-  return normalize(envelope.data)
-}
-
 async function fetchProjectsData(): Promise<GalleryData> {
-  try {
-    const res = await httpGetJson<ApiEnvelope<RawProjectsData>>(CMS_PROJECTS_URL)
+  const res = await httpGetJson<ApiEnvelope<RawProjectsData>>(CMS_PROJECTS_URL)
 
-    if (!res?.success || !res?.data) {
-      throw new Error('Invalid projects response: missing success or data')
-    }
-
-    const normalized = normalize(res.data)
-
-    // Endpoint reachable but empty (e.g. stub) → prefer the mock so the page
-    // still shows the lots. Remove this once the CMS is fully populated.
-    if (normalized.gallery.length === 0) {
-      console.warn('[projects] CMS returned 0 lots, using mock')
-      return loadMock()
-    }
-
-    return normalized
-  } catch (error) {
-    // Endpoint not built yet / network error → fall back to the local mock.
-    console.warn('[projects] CMS unavailable, using mock:', (error as Error)?.message)
-    return loadMock()
+  if (!res?.success || !res?.data) {
+    throw new Error('Invalid projects response: missing success or data')
   }
+
+  return normalize(res.data)
 }
 
 /**

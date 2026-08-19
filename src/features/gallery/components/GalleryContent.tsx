@@ -25,35 +25,21 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
 
   const toggleImage = (index: number) => {
     setIsTransitioning(prev => ({ ...prev, [index]: true }))
-    
+
     setTimeout(() => {
       setImageStates(prev => ({
         ...prev,
         [index]: prev[index] === 'real' ? 'virtual' : 'real',
       }))
-      
+
       setTimeout(() => {
         setIsTransitioning(prev => ({ ...prev, [index]: false }))
       }, 50)
     }, 200)
   }
 
-  const getCurrentImage = (image: GalleryImage, index: number): string => {
-    const state = imageStates[index] || 'virtual'
-    const imageUrl = state === 'real' && image.real_img ? image.real_img : image.virtual_img
-    
-    // Return null placeholder if URL is empty or invalid
-    return imageUrl && imageUrl.trim() !== '' ? imageUrl : '/placeholder-image.jpg'
-  }
-
-  const getCurrentMediaType = (image: GalleryImage, index: number): MediaType => {
-    const state = imageStates[index] || 'virtual'
-    return state === 'real' && image.real_img ? image.real_img_type : image.virtual_img_type
-  }
-
-  const getToggleLabel = (image: GalleryImage, index: number) => {
-    const state = imageStates[index] || 'virtual'
-    return state === 'real' ? 'View Virtual Image' : 'View Real Image'
+  const hasVirtualImage = (image: GalleryImage): boolean => {
+    return !!(image.virtual_img && image.virtual_img.trim() !== '')
   }
 
   const hasRealImage = (image: GalleryImage): boolean => {
@@ -61,8 +47,34 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
   }
 
   const hasValidImage = (image: GalleryImage): boolean => {
-    return !!(image.virtual_img && image.virtual_img.trim() !== '') || 
-           !!(image.real_img && image.real_img.trim() !== '')
+    return hasVirtualImage(image) || hasRealImage(image)
+  }
+
+  const hasBothImages = (image: GalleryImage): boolean => {
+    return hasVirtualImage(image) && hasRealImage(image)
+  }
+
+  // Default to whichever image type actually exists; prefer virtual when both are present.
+  const getDefaultState = (image: GalleryImage): 'virtual' | 'real' => {
+    return hasVirtualImage(image) ? 'virtual' : 'real'
+  }
+
+  const getCurrentImage = (image: GalleryImage, index: number): string => {
+    const state = imageStates[index] || getDefaultState(image)
+    const imageUrl = state === 'real' && image.real_img ? image.real_img : image.virtual_img
+
+    // Return null placeholder if URL is empty or invalid
+    return imageUrl && imageUrl.trim() !== '' ? imageUrl : '/placeholder-image.jpg'
+  }
+
+  const getCurrentMediaType = (image: GalleryImage, index: number): MediaType => {
+    const state = imageStates[index] || getDefaultState(image)
+    return state === 'real' && image.real_img ? image.real_img_type : image.virtual_img_type
+  }
+
+  const getToggleLabel = (image: GalleryImage, index: number) => {
+    const state = imageStates[index] || getDefaultState(image)
+    return state === 'real' ? 'View Virtual Image' : 'View Real Image'
   }
 
   // Filter out images with no valid URLs
@@ -118,7 +130,7 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
                 )}
 
                 {/* Overlay for images with both virtual and real versions */}
-                {hasRealImage(image) && currentSrc !== '/placeholder-image.jpg' && (
+                {hasBothImages(image) && currentSrc !== '/placeholder-image.jpg' && (
                   <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20">
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <Button
