@@ -33,6 +33,21 @@ export function normalizeDriveImageUrl(url: string | null | undefined): string {
   }
 }
 
+/**
+ * Same-origin, Next.js-optimized URL for a Drive-hosted image at a specific
+ * width. Use this (instead of a raw lh3.googleusercontent.com URL) for grids
+ * that render many thumbnails as plain <img> tags at once — Google throttles
+ * bursts of concurrent cross-origin requests to lh3, which shows up as some
+ * thumbnails randomly failing to load. Routing through Next's own
+ * `/_next/image` endpoint means only the server fetches from Google (once,
+ * then cached), and the browser only ever talks to the same origin.
+ */
+export function driveGridThumb(url: string | null | undefined, width = 750, quality = 75): string {
+  const normalized = normalizeDriveImageUrl(url)
+  if (!normalized) return ''
+  return `/_next/image?url=${encodeURIComponent(normalized)}&w=${width}&q=${quality}`
+}
+
 /** Extract the Google Drive file id from any Drive/lh3 URL, or null. */
 export function driveFileId(url: string | null | undefined): string | null {
   if (!url) return null
