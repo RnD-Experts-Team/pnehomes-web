@@ -23,8 +23,8 @@ import type { Property } from './types'
  * @property {number} [max] - Maximum price filter (inclusive)
  * @property {number} [page] - Page number for pagination (1-based, defaults to 1)
  * @property {number} [limit] - Number of items per page (defaults to 9)
- * @property {string} [sortBy] - Field to sort by (sqft, price, id - defaults to sqft)
- * @property {string} [sortOrder] - Sort direction (asc, desc - defaults to desc)
+ * @property {string} [sortBy] - Field to sort by (sqft, price, id, title - defaults to title)
+ * @property {string} [sortOrder] - Sort direction (asc, desc - defaults to asc)
  */
 export type ListParams = {
   community?: string
@@ -36,7 +36,7 @@ export type ListParams = {
   max?: number
   page?: number
   limit?: number
-  sortBy?: 'sqft' | 'price' | 'id'
+  sortBy?: 'sqft' | 'price' | 'id' | 'title'
   sortOrder?: 'asc' | 'desc'
 }
 
@@ -90,11 +90,34 @@ export function applyFiltersAndSort(items: Property[], params: ListParams = {}) 
   if (params.min) out = out.filter(p => parseInt(p.price) >= params.min!)
   if (params.max) out = out.filter(p => parseInt(p.price) <= params.max!)
 
-  // Sorting logic - supports multiple fields with ascending/descending order
-  const sortBy = params.sortBy || 'sqft'
-  const sortOrder = params.sortOrder || 'desc'
+  // Sorting logic - supports multiple fields with ascending/descending order.
+  // Defaults to a natural sort on `title` ascending. This is deliberate: the
+  // database `id` does NOT track the plan/lot number (a plan numbered lower
+  // can easily have been created in the CMS after one numbered higher), so
+  // sorting by `id` still left the listing out of sequence. `sqft desc` (the
+  // old default) was worse still — it silently overrode the CMS's intended
+  // order with "biggest house first". Sorting the title itself with
+  // `numeric: true` compares embedded numbers numerically ("Plan 2" before
+  // "Plan 10", not after) and reliably reproduces the CMS's Plan 1, 2, 3 ...
+  // 31, 32, 33 ordering regardless of insertion order.
+  const sortBy = params.sortBy || 'title'
+  const sortOrder = params.sortOrder || 'asc'
+
+  // Collapse stray repeated whitespace (e.g. a CMS entry typed as "PNE PLAN  7"
+  // with a double space) so a data typo can't throw the natural sort off —
+  // localeCompare's numeric collation treats that extra space as meaningful,
+  // which otherwise sorts "PNE PLAN  7" before "PNE PLAN 1" entirely.
+  const normalizeTitle = (title: string) => title.replace(/\s+/g, ' ').trim()
 
   out.sort((a, b) => {
+    if (sortBy === 'title') {
+      const cmp = normalizeTitle(a.title).localeCompare(normalizeTitle(b.title), undefined, {
+        numeric: true,
+        sensitivity: 'base',
+      })
+      return sortOrder === 'desc' ? -cmp : cmp
+    }
+
     let aValue: number
     let bValue: number
 
@@ -115,7 +138,6 @@ export function applyFiltersAndSort(items: Property[], params: ListParams = {}) 
         break
     }
 
-    // Apply sort order (descending by default for better UX - largest/most expensive first)
     return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
   })
 
