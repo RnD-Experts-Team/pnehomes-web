@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/features/home/components/homeLayout/Header'
@@ -45,7 +44,7 @@ export const metadata: Metadata = {
   },
 }
 
-const GOOGLE_ADS_ID = 'AW-16793956604'
+const GOOGLE_ADS_ID = 'AW-1673956604'
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-EWHZR0JMJQ'
 const ENABLE_ANALYTICS = process.env.NODE_ENV === 'production' && Boolean(GA_MEASUREMENT_ID)
 
@@ -86,10 +85,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <ComparisonDrawer />
           <ComparisonFloatingButton />
         </ComparisonProvider>
+        {/* No Suspense here: GoogleAnalytics does nothing async, and wrapping
+            it in Suspense made Next.js stream it in as a deferred chunk
+            instead of flushing it in the initial HTML — which meant the
+            beforeInteractive <Script> tags inside it never actually rendered
+            server-side, and tag-verification crawlers saw every page as
+            "Not tagged". */}
         {ENABLE_ANALYTICS ? (
-          <Suspense fallback={null}>
-            <GoogleAnalytics gaMeasurementId={GA_MEASUREMENT_ID} googleAdsId={GOOGLE_ADS_ID} />
-          </Suspense>
+          <GoogleAnalytics gaMeasurementId={GA_MEASUREMENT_ID} googleAdsId={GOOGLE_ADS_ID} />
         ) : null}
       </body>
     </html>
