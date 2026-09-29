@@ -44,7 +44,8 @@ export const metadata: Metadata = {
   },
 }
 
-const GOOGLE_ADS_ID = 'AW-1673956604'
+// Must match the tag ID shown in Google Ads > Tag coverage for the PNE Homes account.
+const GOOGLE_ADS_ID = 'AW-16793956604'
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-EWHZR0JMJQ'
 const ENABLE_ANALYTICS = process.env.NODE_ENV === 'production' && Boolean(GA_MEASUREMENT_ID)
 

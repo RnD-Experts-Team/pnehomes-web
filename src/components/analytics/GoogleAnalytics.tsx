@@ -30,11 +30,17 @@ declare global {
  * own component lets the scripts render outside any Suspense boundary.
  */
 export default function GoogleAnalytics({ gaMeasurementId, googleAdsId }: Props) {
+  // One Google tag for both destinations. The loader's ?id= uses the Ads ID
+  // because Google Ads Tag coverage identifies the tag by that loader URL —
+  // with only the GA4 ID there, Ads reported every page as "Not tagged" even
+  // though gtag('config', AW-...) was running. GA4 is still configured below.
+  const loaderId = googleAdsId || gaMeasurementId
+
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-before-interactive-script-outside-document -- this rule predates App Router; app/layout.tsx's root layout is the documented replacement for _document.js */}
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${loaderId}`}
         strategy="beforeInteractive"
       />
       {/* eslint-disable-next-line @next/next/no-before-interactive-script-outside-document -- see above */}
@@ -44,8 +50,8 @@ export default function GoogleAnalytics({ gaMeasurementId, googleAdsId }: Props)
           function gtag(){dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', '${gaMeasurementId}', { send_page_view: false, anonymize_ip: true });
           ${googleAdsId ? `gtag('config', '${googleAdsId}');` : ''}
+          gtag('config', '${gaMeasurementId}', { send_page_view: false, anonymize_ip: true });
         `}
       </Script>
       {/* Only this piece needs useSearchParams(), so only this piece needs
