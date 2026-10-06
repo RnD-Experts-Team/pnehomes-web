@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import MasonryColumns from '@/components/MasonryColumns'
 import { driveGridThumb } from '@/features/home/model/url.utils'
 import type { GalleryImage } from '@/features/gallery/model/types'
 
@@ -82,20 +83,17 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
     )
   }
 
-  // Cap columns to the photo count so few photos never leave an empty column.
-  const n = validImages.length
-  const colClass =
-    n <= 1
-      ? 'columns-1'
-      : n === 2
-        ? 'columns-2'
-        : n === 3
-          ? 'columns-2 sm:columns-3'
-          : 'columns-2 md:columns-3 lg:columns-4'
+  // MasonryColumns caps columns to the photo count, so 1–2 photos never leave
+  // an empty column; 3 photos get 3 columns from sm up.
+  const columns =
+    validImages.length === 3 ? { base: 2, sm: 3 } : { base: 2, md: 3, lg: 4 }
 
   return (
-    <div className={`${colClass} [column-gap:1rem] sm:[column-gap:1.25rem]`}>
-      {validImages.map((image, index) => {
+    <MasonryColumns
+      items={validImages}
+      columns={columns}
+      className="gap-4 sm:gap-5"
+      renderItem={(image, index) => {
         const src = currentSrc(image, index)
         if (!src) return null
         const isLoaded = loaded.has(src)
@@ -106,7 +104,7 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
             key={index}
             // Until the photo loads, hold a 4:3 box. A zero-height <img> makes
             // lazy loading treat every tile as on-screen and fetch all at once.
-            className={`group relative mb-4 break-inside-avoid overflow-hidden rounded-2xl bg-gray-100 shadow-sm ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-xl sm:mb-5 ${
+            className={`group relative mb-4 overflow-hidden rounded-2xl bg-gray-100 shadow-sm ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-xl sm:mb-5 ${
               isLoaded ? '' : 'aspect-[4/3]'
             }`}
           >
@@ -149,7 +147,7 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
             )}
           </figure>
         )
-      })}
-    </div>
+      }}
+    />
   )
 }

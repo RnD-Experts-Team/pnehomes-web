@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CmsMedia } from '@/components/CmsMedia'
 import ImageLightbox from '@/components/ImageLightbox'
+import MasonryColumns from '@/components/MasonryColumns'
 import { Skeleton } from '@/components/ui/skeleton'
 import { driveGridThumb } from '@/features/home/model/url.utils'
 import { GalleryImage, MediaType } from '../model/types'
@@ -110,10 +111,12 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
   return (
     <>
       {/* Pinterest-style masonry: each tile keeps the image's own aspect ratio
-          instead of being cropped into a fixed box. CSS columns lay tiles out
-          top-to-bottom per column; `break-inside-avoid` keeps a tile intact. */}
-      <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4">
-        {validImages.map((image, index) => {
+          instead of being cropped into a fixed box, in upload order left-to-right. */}
+      <MasonryColumns
+        items={validImages}
+        columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
+        className="gap-6"
+        renderItem={(image, index) => {
           const currentSrc = getCurrentImage(image, index)
           const currentMediaType = getCurrentMediaType(image, index)
           const alt = albumTitle
@@ -130,7 +133,7 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
           return (
             <Card
               key={index}
-              className="group mb-6 break-inside-avoid overflow-hidden border-0 p-0 shadow-md transition-all duration-300 hover:shadow-lg"
+              className="group mb-6 overflow-hidden border-0 p-0 shadow-md transition-all duration-300 hover:shadow-lg"
             >
               <CardContent className="p-0">
                 <div
@@ -213,8 +216,8 @@ export default function GalleryContent({ images, albumTitle }: GalleryContentPro
               </CardContent>
             </Card>
           )
-        })}
-      </div>
+        }}
+      />
 
       <ImageLightbox
         open={lightboxSrc !== null}
